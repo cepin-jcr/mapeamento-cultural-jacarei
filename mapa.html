@@ -1,0 +1,410 @@
+<!-- mapa/index.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa Cultural • Jacareí</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+--v:#5B8C5A;
+--vc:#B8D8BA;
+--b:#F7F2EA;
+--t:#3B3B3B;
+--s:0 10px 40px rgba(91,140,90,.15)
+}
+
+body{
+font-family:Poppins,sans-serif;
+background:var(--b);
+color:var(--t);
+overflow-x:hidden
+}
+
+body:before{
+content:'';
+position:fixed;
+inset:0;
+z-index:-2;
+background:
+radial-gradient(circle at 20% 20%,#5b8c5a22,transparent 20%),
+radial-gradient(circle at 80% 10%,#c97c5d22,transparent 20%),
+radial-gradient(circle at 50% 80%,#b8d8ba55,transparent 20%);
+animation:bg 15s linear infinite alternate
+}
+
+@keyframes bg{
+to{
+transform:scale(1.1) rotate(2deg)
+}
+}
+
+.leaf{
+position:fixed;
+width:30px;
+opacity:.12;
+z-index:-1;
+animation:fall linear infinite
+}
+
+.leaf:nth-child(1){left:10%;animation-duration:18s}
+.leaf:nth-child(2){left:50%;animation-duration:22s}
+.leaf:nth-child(3){left:85%;animation-duration:20s}
+
+@keyframes fall{
+from{top:-100px;transform:rotate(0)}
+to{top:110vh;transform:rotate(360deg)}
+}
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:18px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#ffffffbb;
+backdrop-filter:blur(18px);
+border-bottom:1px solid #5b8c5a22;
+z-index:999;
+transition:.4s
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:14px
+}
+
+.logo img{
+width:58px;
+animation:logo 4s ease-in-out infinite
+}
+
+@keyframes logo{
+50%{transform:translateY(-8px)}
+}
+
+.logo b{
+display:block;
+font-size:1.1rem;
+color:var(--v)
+}
+
+.logo span{
+font-size:.85rem;
+color:#777
+}
+
+.links{
+display:flex;
+gap:12px;
+flex-wrap:wrap
+}
+
+a{
+text-decoration:none;
+padding:12px 18px;
+border-radius:14px;
+font-weight:500;
+color:var(--t);
+transition:.35s
+}
+
+a:hover{
+background:var(--v);
+color:#fff;
+transform:translateY(-4px);
+box-shadow:0 10px 20px #5b8c5a33
+}
+
+.hero{
+padding:170px 30px 60px;
+text-align:center
+}
+
+.badge{
+display:inline-block;
+padding:12px 18px;
+border-radius:999px;
+background:#5b8c5a22;
+color:var(--v);
+font-weight:600;
+margin-bottom:24px;
+animation:pulse 2s infinite
+}
+
+@keyframes pulse{
+50%{transform:scale(1.05)}
+}
+
+h1{
+font-size:4.5rem;
+line-height:1;
+color:var(--v);
+margin-bottom:20px;
+animation:left 1s
+}
+
+p{
+max-width:800px;
+margin:auto;
+line-height:1.9;
+color:#666;
+animation:right 1s
+}
+
+@keyframes left{
+from{opacity:0;transform:translateX(-60px)}
+}
+
+@keyframes right{
+from{opacity:0;transform:translateX(60px)}
+}
+
+.map-wrap{
+padding:0 40px 100px
+}
+
+.map-box{
+position:relative;
+border-radius:35px;
+overflow:hidden;
+box-shadow:var(--s);
+border:6px solid #ffffffaa;
+animation:mapFloat 6s ease-in-out infinite
+}
+
+@keyframes mapFloat{
+50%{transform:translateY(-10px)}
+}
+
+#map{
+height:75vh;
+min-height:500px;
+z-index:1
+}
+
+.glow{
+position:absolute;
+width:400px;
+height:400px;
+background:#b8d8ba66;
+filter:blur(80px);
+border-radius:50%;
+top:-120px;
+right:-120px;
+animation:spin 15s linear infinite;
+z-index:2;
+pointer-events:none
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+.info{
+position:absolute;
+top:25px;
+left:25px;
+z-index:500;
+background:#ffffffdd;
+backdrop-filter:blur(12px);
+padding:18px 22px;
+border-radius:22px;
+box-shadow:var(--s);
+max-width:300px;
+animation:card 1s
+}
+
+@keyframes card{
+from{
+opacity:0;
+transform:translateY(30px)
+}
+}
+
+.info h3{
+color:var(--v);
+margin-bottom:8px
+}
+
+.info p{
+font-size:.92rem;
+line-height:1.7
+}
+
+footer{
+padding:40px;
+text-align:center;
+color:#777
+}
+
+.leaflet-control-zoom a{
+background:#fff!important;
+color:var(--v)!important;
+border:none!important
+}
+
+@media(max-width:900px){
+
+h1{
+font-size:3rem
+}
+
+.map-wrap{
+padding:0 20px 80px
+}
+
+#map{
+height:65vh
+}
+
+}
+
+@media(max-width:700px){
+
+nav{
+padding:14px;
+flex-direction:column;
+gap:15px
+}
+
+.links{
+justify-content:center
+}
+
+.hero{
+padding-top:240px
+}
+
+h1{
+font-size:2.5rem
+}
+
+.info{
+position:relative;
+top:auto;
+left:auto;
+margin:20px;
+max-width:none
+}
+
+#map{
+height:60vh;
+min-height:420px
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+
+<nav>
+
+<div class="logo">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+
+<div>
+<b>Mapeamento Cultural</b>
+<span>Jacareí • IFSP</span>
+</div>
+
+</div>
+
+<div class="links">
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+</div>
+
+</nav>
+
+<section class="hero">
+
+<div class="badge">
+🗺️ Cartografia cultural colaborativa
+</div>
+
+<h1>
+Mapa Cultural de Jacareí
+</h1>
+
+<p>
+Explore territórios culturais, artistas, coletivos e espaços criativos da cidade através de uma experiência visual moderna e interativa.
+</p>
+
+</section>
+
+<section class="map-wrap">
+
+<div class="map-box">
+
+<div class="glow"></div>
+
+<div class="info">
+<h3>🌿 Em construção</h3>
+
+<p>
+Este mapa futuramente exibirá artistas, coletivos, eventos e espaços culturais cadastrados na plataforma.
+</p>
+</div>
+
+<div id="map"></div>
+
+</div>
+
+</section>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const map=L.map('map',{
+zoomControl:true
+}).setView([-23.3053,-45.9658],13)
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+attribution:'© OpenStreetMap'
+}
+).addTo(map)
+
+L.marker([-23.3053,-45.9658])
+.addTo(map)
+.bindPopup('📍 Jacareí • Centro Cultural')
+
+const n=document.querySelector('nav')
+
+onscroll=()=>{
+n.style.padding=scrollY>50?'14px 40px':'18px 40px'
+n.style.boxShadow=scrollY>50?'0 10px 30px rgba(0,0,0,.08)':'none'
+}
+
+</script>
+
+</body>
+</html>

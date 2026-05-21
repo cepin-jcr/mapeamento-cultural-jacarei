@@ -1,807 +1,584 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mapeamento Cultural de Jacareí</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    :root{
-      --verde:#5B8C5A;
-      --verde-claro:#B8D8BA;
-      --verde-suave:#E8F3E8;
-      --marrom:#8B6B4E;
-      --bege:#F7F2EA;
-      --terracota:#C97C5D;
-      --texto:#3B3B3B;
-      --white:#ffffff;
-      --glass:rgba(255,255,255,0.65);
-      --shadow:0 10px 40px rgba(91,140,90,.15);
-      --gradient:linear-gradient(135deg,#B8D8BA,#F7F2EA,#D9C2A7);
-    }
-
-    body{
-      font-family:'Poppins',sans-serif;
-      background:var(--bege);
-      overflow-x:hidden;
-      color:var(--texto);
-      position:relative;
-    }
-
-    /* FUNDO ANIMADO */
-
-    body::before{
-      content:'';
-      position:fixed;
-      inset:0;
-      background:
-      radial-gradient(circle at 20% 20%, rgba(91,140,90,.12), transparent 20%),
-      radial-gradient(circle at 80% 10%, rgba(201,124,93,.12), transparent 20%),
-      radial-gradient(circle at 50% 80%, rgba(184,216,186,.25), transparent 20%);
-      z-index:-2;
-      animation:bgMove 15s linear infinite alternate;
-    }
-
-    @keyframes bgMove{
-      from{
-        transform:scale(1) rotate(0deg);
-      }
-      to{
-        transform:scale(1.1) rotate(2deg);
-      }
-    }
-
-    /* FOLHAS ANIMADAS */
-
-    .leaf{
-      position:fixed;
-      width:30px;
-      opacity:.18;
-      z-index:-1;
-      animation:fall linear infinite;
-    }
-
-    .leaf:nth-child(1){
-      left:5%;
-      animation-duration:18s;
-    }
-
-    .leaf:nth-child(2){
-      left:25%;
-      animation-duration:22s;
-    }
-
-    .leaf:nth-child(3){
-      left:50%;
-      animation-duration:20s;
-    }
-
-    .leaf:nth-child(4){
-      left:75%;
-      animation-duration:25s;
-    }
-
-    .leaf:nth-child(5){
-      left:90%;
-      animation-duration:19s;
-    }
-
-    @keyframes fall{
-      from{
-        top:-100px;
-        transform:rotate(0deg);
-      }
-
-      to{
-        top:110vh;
-        transform:rotate(360deg);
-      }
-    }
-
-    /* NAVBAR */
-
-    nav{
-      position:fixed;
-      top:0;
-      width:100%;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:18px 40px;
-      z-index:1000;
-      backdrop-filter:blur(18px);
-      background:rgba(255,255,255,.72);
-      border-bottom:1px solid rgba(91,140,90,.12);
-      transition:.4s;
-    }
-
-    .logo-area{
-      display:flex;
-      align-items:center;
-      gap:16px;
-    }
-
-    .logo-area img{
-      width:58px;
-      animation:floatLogo 4s ease-in-out infinite;
-    }
-
-    @keyframes floatLogo{
-      0%{transform:translateY(0px);}
-      50%{transform:translateY(-8px);}
-      100%{transform:translateY(0px);}
-    }
-
-    .logo-text{
-      display:flex;
-      flex-direction:column;
-    }
-
-    .logo-text strong{
-      font-size:1.1rem;
-      color:var(--verde);
-    }
-
-    .logo-text span{
-      font-size:.85rem;
-      color:#777;
-    }
-
-    .nav-links{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .nav-links a{
-      text-decoration:none;
-      color:var(--texto);
-      padding:12px 18px;
-      border-radius:14px;
-      transition:.35s;
-      font-weight:500;
-      position:relative;
-    }
-
-    .nav-links a:hover{
-      background:var(--verde);
-      color:white;
-      transform:translateY(-4px);
-      box-shadow:0 10px 20px rgba(91,140,90,.2);
-    }
-
-    /* HERO */
-
-    .hero{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:140px 30px 80px;
-      position:relative;
-    }
-
-    .hero-content{
-      max-width:1200px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:60px;
-      align-items:center;
-    }
-
-    .hero-text{
-      animation:fadeLeft 1s ease;
-    }
-
-    @keyframes fadeLeft{
-      from{
-        opacity:0;
-        transform:translateX(-60px);
-      }
-      to{
-        opacity:1;
-        transform:translateX(0);
-      }
-    }
-
-    .badge{
-      display:inline-block;
-      background:rgba(91,140,90,.12);
-      color:var(--verde);
-      padding:12px 18px;
-      border-radius:999px;
-      font-weight:600;
-      margin-bottom:26px;
-      animation:pulse 2s infinite;
-    }
-
-    @keyframes pulse{
-      0%{transform:scale(1);}
-      50%{transform:scale(1.04);}
-      100%{transform:scale(1);}
-    }
-
-    .hero h1{
-      font-size:5rem;
-      line-height:1;
-      margin-bottom:24px;
-      color:var(--verde);
-    }
-
-    .hero p{
-      font-size:1.15rem;
-      line-height:1.9;
-      color:#666;
-      margin-bottom:35px;
-    }
-
-    .buttons{
-      display:flex;
-      gap:18px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      text-decoration:none;
-      padding:16px 28px;
-      border-radius:18px;
-      transition:.4s;
-      font-weight:600;
-      display:inline-block;
-    }
-
-    .btn-primary{
-      background:var(--verde);
-      color:white;
-      box-shadow:0 10px 30px rgba(91,140,90,.2);
-    }
-
-    .btn-primary:hover{
-      transform:translateY(-6px) scale(1.04);
-    }
-
-    .btn-secondary{
-      background:white;
-      color:var(--verde);
-      border:2px solid var(--verde);
-    }
-
-    .btn-secondary:hover{
-      background:var(--verde);
-      color:white;
-      transform:translateY(-6px);
-    }
-
-    .hero-images{
-      position:relative;
-      height:620px;
-      animation:fadeRight 1s ease;
-    }
-
-    @keyframes fadeRight{
-      from{
-        opacity:0;
-        transform:translateX(60px);
-      }
-      to{
-        opacity:1;
-        transform:translateX(0);
-      }
-    }
-
-    .floating-card{
-      position:absolute;
-      border-radius:28px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
-      animation:float 6s ease-in-out infinite;
-      border:6px solid rgba(255,255,255,.7);
-    }
-
-    .floating-card img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .card1{
-      width:320px;
-      height:420px;
-      top:0;
-      left:0;
-      animation-delay:0s;
-    }
-
-    .card2{
-      width:260px;
-      height:300px;
-      right:0;
-      top:80px;
-      animation-delay:1s;
-    }
-
-    .card3{
-      width:240px;
-      height:240px;
-      left:100px;
-      bottom:0;
-      animation-delay:2s;
-    }
-
-    @keyframes float{
-      0%{
-        transform:translateY(0px);
-      }
-      50%{
-        transform:translateY(-16px);
-      }
-      100%{
-        transform:translateY(0px);
-      }
-    }
-
-    /* SECTIONS */
-
-    section{
-      padding:100px 40px;
-    }
-
-    .section-title{
-      text-align:center;
-      margin-bottom:60px;
-    }
-
-    .section-title h2{
-      font-size:3rem;
-      color:var(--verde);
-      margin-bottom:12px;
-    }
-
-    .section-title p{
-      color:#777;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:28px;
-    }
-
-    .culture-card{
-      background:rgba(255,255,255,.7);
-      border-radius:28px;
-      overflow:hidden;
-      backdrop-filter:blur(12px);
-      transition:.5s;
-      box-shadow:var(--shadow);
-      position:relative;
-    }
-
-    .culture-card:hover{
-      transform:translateY(-14px) rotate(-1deg);
-    }
-
-    .culture-card img{
-      width:100%;
-      height:240px;
-      object-fit:cover;
-      transition:.6s;
-    }
-
-    .culture-card:hover img{
-      transform:scale(1.08);
-    }
-
-    .culture-card .content{
-      padding:24px;
-    }
-
-    .culture-card h3{
-      margin-bottom:10px;
-      color:var(--verde);
-      font-size:1.4rem;
-    }
-
-    .culture-card p{
-      line-height:1.8;
-      color:#666;
-    }
-
-    /* CTA */
-
-    .cta{
-      background:var(--gradient);
-      border-radius:40px;
-      padding:80px 40px;
-      text-align:center;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .cta::before{
-      content:'';
-      position:absolute;
-      width:300px;
-      height:300px;
-      background:rgba(255,255,255,.25);
-      border-radius:50%;
-      top:-100px;
-      right:-100px;
-      animation:rotateBlob 12s linear infinite;
-    }
-
-    @keyframes rotateBlob{
-      from{
-        transform:rotate(0deg);
-      }
-      to{
-        transform:rotate(360deg);
-      }
-    }
-
-    .cta h2{
-      font-size:3rem;
-      color:var(--verde);
-      margin-bottom:20px;
-      position:relative;
-      z-index:2;
-    }
-
-    .cta p{
-      max-width:700px;
-      margin:auto;
-      color:#5f5f5f;
-      line-height:1.9;
-      margin-bottom:35px;
-      position:relative;
-      z-index:2;
-    }
-
-    footer{
-      padding:40px;
-      text-align:center;
-      color:#777;
-    }
-
-    /* RESPONSIVO */
-
-    @media(max-width:1000px){
-
-      .hero-content{
-        grid-template-columns:1fr;
-      }
-
-      .hero-images{
-        height:500px;
-      }
-
-      .hero h1{
-        font-size:3.5rem;
-      }
-
-    }
-
-    @media(max-width:700px){
-
-      nav{
-        flex-direction:column;
-        gap:20px;
-      }
-
-      .hero-images{
-        display:none;
-      }
-
-      section{
-        padding:80px 20px;
-      }
-
-      .hero{
-        padding-top:220px;
-      }
-
-      .hero h1{
-        font-size:2.8rem;
-      }
-
-    }
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapeamento Cultural</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--v:#5B8C5A;--vc:#B8D8BA;--b:#F7F2EA;--t:#3B3B3B;
+--g:linear-gradient(135deg,#B8D8BA,#F7F2EA,#D9C2A7);
+--s:0 10px 40px rgba(91,140,90,.15)
+}
+body{
+font-family:Poppins,sans-serif;
+background:var(--b);
+color:var(--t);
+overflow-x:hidden
+}
+body:before{
+content:'';
+position:fixed;
+inset:0;
+z-index:-2;
+background:
+radial-gradient(circle at 20% 20%,#5b8c5a22,transparent 20%),
+radial-gradient(circle at 80% 10%,#c97c5d22,transparent 20%),
+radial-gradient(circle at 50% 80%,#b8d8ba55,transparent 20%);
+animation:bg 15s linear infinite alternate
+}
+@keyframes bg{to{transform:scale(1.1) rotate(2deg)}}
+
+.leaf{
+position:fixed;
+width:30px;
+opacity:.15;
+z-index:-1;
+animation:fall linear infinite
+}
+.leaf:nth-child(1){left:5%;animation-duration:18s}
+.leaf:nth-child(2){left:25%;animation-duration:22s}
+.leaf:nth-child(3){left:50%;animation-duration:20s}
+.leaf:nth-child(4){left:75%;animation-duration:25s}
+.leaf:nth-child(5){left:90%;animation-duration:19s}
+
+@keyframes fall{
+from{top:-100px;transform:rotate(0)}
+to{top:110vh;transform:rotate(360deg)}
+}
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:18px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#ffffffbb;
+backdrop-filter:blur(18px);
+border-bottom:1px solid #5b8c5a22;
+z-index:99;
+transition:.4s
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:14px
+}
+
+.logo img{
+width:58px;
+animation:logo 4s ease-in-out infinite
+}
+
+@keyframes logo{
+50%{transform:translateY(-8px)}
+}
+
+.logo b{
+display:block;
+font-size:1.1rem;
+color:var(--v)
+}
+
+.logo span{
+font-size:.85rem;
+color:#777
+}
+
+.links{
+display:flex;
+gap:12px;
+flex-wrap:wrap
+}
+
+a{
+text-decoration:none;
+transition:.35s
+}
+
+.links a,.btn{
+padding:12px 18px;
+border-radius:14px;
+font-weight:500;
+color:var(--t)
+}
+
+.links a:hover,.btn1{
+background:var(--v);
+color:#fff;
+box-shadow:0 10px 20px #5b8c5a33
+}
+
+.links a:hover,.btn:hover{
+transform:translateY(-4px)
+}
+
+.hero{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:140px 30px 80px
+}
+
+.hero-content{
+max-width:1200px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
+align-items:center
+}
+
+.hero-text{
+animation:left 1s
+}
+
+.hero-img{
+position:relative;
+height:620px;
+animation:right 1s
+}
+
+@keyframes left{
+from{opacity:0;transform:translateX(-60px)}
+}
+
+@keyframes right{
+from{opacity:0;transform:translateX(60px)}
+}
+
+.badge{
+display:inline-block;
+padding:12px 18px;
+border-radius:999px;
+background:#5b8c5a22;
+color:var(--v);
+font-weight:600;
+margin-bottom:26px;
+animation:pulse 2s infinite
+}
+
+@keyframes pulse{
+50%{transform:scale(1.05)}
+}
+
+h1{
+font-size:5rem;
+line-height:1;
+color:var(--v);
+margin-bottom:24px
+}
+
+.hero p,.card p,.cta p{
+line-height:1.9;
+color:#666
+}
+
+.hero p{
+font-size:1.1rem;
+margin-bottom:35px
+}
+
+.btns{
+display:flex;
+gap:18px;
+flex-wrap:wrap
+}
+
+.btn{
+padding:16px 28px;
+border-radius:18px;
+font-weight:600;
+display:inline-block
+}
+
+.btn2{
+border:2px solid var(--v);
+color:var(--v);
+background:#fff
+}
+
+.btn2:hover{
+background:var(--v);
+color:#fff
+}
+
+.float{
+position:absolute;
+overflow:hidden;
+border-radius:28px;
+border:6px solid #ffffffaa;
+box-shadow:var(--s);
+animation:f 6s ease-in-out infinite
+}
+
+.float img,.card img{
+width:100%;
+height:100%;
+object-fit:cover
+}
+
+.c1{width:320px;height:420px}
+.c2{
+width:260px;
+height:300px;
+right:0;
+top:80px;
+animation-delay:1s
+}
+.c3{
+width:240px;
+height:240px;
+left:100px;
+bottom:0;
+animation-delay:2s
+}
+
+@keyframes f{
+50%{transform:translateY(-16px)}
+}
+
+section{
+padding:100px 40px
+}
+
+.tt{
+text-align:center;
+margin-bottom:60px
+}
+
+.tt h2,.cta h2{
+font-size:3rem;
+color:var(--v)
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:28px
+}
+
+.card{
+background:#ffffffb3;
+border-radius:28px;
+overflow:hidden;
+backdrop-filter:blur(12px);
+box-shadow:var(--s);
+transition:.5s;
+opacity:0;
+transform:translateY(60px)
+}
+
+.card.show{
+opacity:1;
+transform:none
+}
+
+.card:hover{
+transform:translateY(-14px) rotate(-1deg)
+}
+
+.card img{
+height:240px;
+transition:.6s
+}
+
+.card:hover img{
+transform:scale(1.08)
+}
+
+.card div{
+padding:24px
+}
+
+.card h3{
+margin-bottom:10px;
+font-size:1.4rem;
+color:var(--v)
+}
+
+.cta{
+background:var(--g);
+border-radius:40px;
+padding:80px 40px;
+text-align:center;
+position:relative;
+overflow:hidden
+}
+
+.cta:before{
+content:'';
+position:absolute;
+width:300px;
+height:300px;
+background:#ffffff44;
+border-radius:50%;
+top:-100px;
+right:-100px;
+animation:spin 12s linear infinite
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+.cta *{
+position:relative;
+z-index:2
+}
+
+footer{
+padding:40px;
+text-align:center;
+color:#777
+}
+
+@media(max-width:1000px){
+.hero-content{grid-template-columns:1fr}
+.hero-img{height:500px}
+h1{font-size:3.5rem}
+}
+
+@media(max-width:700px){
+
+nav{
+padding:14px;
+flex-direction:column;
+gap:15px
+}
+
+.links{
+justify-content:center
+}
+
+.hero{
+padding-top:240px
+}
+
+.hero-img{
+display:none
+}
+
+section{
+padding:80px 20px
+}
+
+h1{
+font-size:2.7rem
+}
+
+.tt h2,.cta h2{
+font-size:2.2rem
+}
+
+.btns{
+flex-direction:column
+}
+
+.btn{
+text-align:center
+}
+
+}
+</style>
 </head>
+
 <body>
 
-  <!-- FOLHAS -->
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
 
-  <img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-  <img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-  <img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-  <img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-  <img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<nav>
 
-  <!-- NAVBAR -->
+<div class="logo">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+
+<div>
+<b>Mapeamento Cultural</b>
+<span>Jacareí • IFSP</span>
+</div>
+</div>
+
+<div class="links">
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+</div>
+
+</nav>
+
+<section class="hero">
+
+<div class="hero-content">
+
+<div class="hero-text">
+
+<div class="badge">
+🌿 Plataforma colaborativa de cultura
+</div>
+
+<h1>
+Conheça a cultura de Jacareí!
+</h1>
+
+<p>
+Conecte artistas, espaços culturais, eventos e toda a diversidade criativa da cidade.
+</p>
+
+<div class="btns">
+<a class="btn btn1" href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">
+Explorar mapa
+</a>
+
+<a class="btn btn2" href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">
+Ver agenda
+</a>
+</div>
+
+</div>
+
+<div class="hero-img">
+
+<div class="float c1">
+<img src="https://picsum.photos/700/900?21">
+</div>
 
-  <nav>
+<div class="float c2">
+<img src="https://picsum.photos/500/700?22">
+</div>
 
-    <div class="logo-area">
+<div class="float c3">
+<img src="https://picsum.photos/400/400?23">
+</div>
 
-      <!-- LOGO IFSP -->
+</div>
+
+</div>
 
-      <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg">
+</section>
+
+<section>
 
-      <div class="logo-text">
-        <strong>Mapeamento Cultural</strong>
-        <span>Jacareí • IFSP</span>
-      </div>
-
-    </div>
-
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/mapa">Mapa</a>
-      <a href="/calendario">Calendário</a>
-      <a href="/espacos">Espaços</a>
-      <a href="/agentes">Agentes</a>
-      <a href="/perfil">Perfil</a>
-      <a href="/mensagens">Mensagens</a>
-    </div>
-
-  </nav>
-
-  <!-- HERO -->
-
-  <section class="hero">
-
-    <div class="hero-content">
-
-      <div class="hero-text">
-
-        <div class="badge">
-          🌿 Plataforma colaborativa de cultura
-        </div>
-
-        <h1>
-          Conheça a cultura de Jacareí!
-        </h1>
-
-        <p>
-          Um espaço digital para conectar artistas, coletivos, espaços
-          culturais, eventos e toda a diversidade criativa da cidade.
-          Descubra experiências, territórios culturais e histórias vivas
-          da cultura jacareiense.
-        </p>
-
-        <div class="buttons">
-          <a href="/mapa" class="btn btn-primary">
-            Explorar Mapa
-          </a>
-
-          <a href="/calendario" class="btn btn-secondary">
-            Ver Agenda
-          </a>
-        </div>
-
-      </div>
-
-      <!-- IMAGENS FLUTUANTES -->
-
-      <div class="hero-images">
-
-        <div class="floating-card card1">
-          <img src="https://picsum.photos/700/900?random=21">
-        </div>
-
-        <div class="floating-card card2">
-          <img src="https://picsum.photos/500/700?random=22">
-        </div>
-
-        <div class="floating-card card3">
-          <img src="https://picsum.photos/400/400?random=23">
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- GALERIA -->
-
-  <section>
-
-    <div class="section-title">
-      <h2>Vivências Culturais</h2>
-      <p>
-        Arte, memória, música e criatividade espalhadas pela cidade.
-      </p>
-    </div>
-
-    <div class="grid">
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=31">
-
-        <div class="content">
-          <h3>Arte Urbana</h3>
-
-          <p>
-            Murais, grafites e intervenções que transformam os espaços urbanos.
-          </p>
-        </div>
-      </div>
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=32">
-
-        <div class="content">
-          <h3>Música & Cultura Popular</h3>
-
-          <p>
-            Eventos culturais, rodas musicais e apresentações comunitárias.
-          </p>
-        </div>
-      </div>
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=33">
-
-        <div class="content">
-          <h3>Espaços Criativos</h3>
-
-          <p>
-            Centros culturais, ateliês, bibliotecas e espaços independentes.
-          </p>
-        </div>
-      </div>
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=34">
-
-        <div class="content">
-          <h3>Teatro & Dança</h3>
-
-          <p>
-            Palcos vivos com expressões artísticas e performances locais.
-          </p>
-        </div>
-      </div>
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=35">
-
-        <div class="content">
-          <h3>Coletivos Culturais</h3>
-
-          <p>
-            Redes colaborativas que fortalecem a cultura em Jacareí.
-          </p>
-        </div>
-      </div>
-
-      <div class="culture-card">
-        <img src="https://picsum.photos/700/500?random=36">
-
-        <div class="content">
-          <h3>Memória & Patrimônio</h3>
-
-          <p>
-            Lugares históricos e memórias que contam a identidade da cidade.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- CTA -->
-
-  <section>
-
-    <div class="cta">
-
-      <h2>
-        Faça parte da rede cultural
-      </h2>
-
-      <p>
-        Cadastre espaços, divulgue eventos, conecte artistas e fortaleça
-        a cultura local através de uma plataforma moderna, colaborativa
-        e acessível.
-      </p>
-
-      <div class="buttons" style="justify-content:center;">
-        <a href="/perfil" class="btn btn-primary">
-          Criar Perfil
-        </a>
-
-        <a href="/mensagens" class="btn btn-secondary">
-          Entrar na Comunidade
-        </a>
-      </div>
-
-    </div>
-
-  </section>
-
-  <footer>
-    © 2026 • Plataforma de Mapeamento Cultural de Jacareí • IFSP
-  </footer>
-
-  <script>
-
-    // navbar animada no scroll
-
-    window.addEventListener('scroll', ()=>{
-
-      const nav = document.querySelector('nav');
-
-      if(window.scrollY > 50){
-
-        nav.style.padding = "14px 40px";
-        nav.style.boxShadow = "0 10px 30px rgba(0,0,0,.08)";
-
-      }else{
-
-        nav.style.padding = "18px 40px";
-        nav.style.boxShadow = "none";
-
-      }
-
-    });
-
-    // animação cards
-
-    const cards = document.querySelectorAll('.culture-card');
-
-    const observer = new IntersectionObserver(entries=>{
-
-      entries.forEach(entry=>{
-
-        if(entry.isIntersecting){
-
-          entry.target.animate([
-
-            {
-              opacity:0,
-              transform:'translateY(60px)'
-            },
-
-            {
-              opacity:1,
-              transform:'translateY(0px)'
-            }
-
-          ],{
-
-            duration:900,
-            fill:'forwards',
-            easing:'ease'
-
-          });
-
-        }
-
-      });
-
-    });
-
-    cards.forEach(card=>{
-      observer.observe(card);
-    });
-
-  </script>
+<div class="tt">
+<h2>Vivências culturais</h2>
+<p>Arte, memória, música e criatividade espalhadas pela cidade.</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<img src="https://picsum.photos/700/500?31">
+<div>
+<h3>Arte Urbana</h3>
+<p>Murais e grafites transformando espaços urbanos.</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/700/500?32">
+<div>
+<h3>Música & Cultura</h3>
+<p>Eventos culturais e apresentações comunitárias.</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/700/500?33">
+<div>
+<h3>Espaços Criativos</h3>
+<p>Centros culturais, bibliotecas e ateliês.</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/700/500?34">
+<div>
+<h3>Teatro & Dança</h3>
+<p>Performances e expressões artísticas locais.</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/700/500?35">
+<div>
+<h3>Coletivos</h3>
+<p>Redes colaborativas fortalecendo a cultura.</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/700/500?36">
+<div>
+<h3>Patrimônio</h3>
+<p>História e memória cultural de Jacareí.</p>
+</div>
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<div class="cta">
+
+<h2>Faça parte da rede cultural</h2>
+
+<p>
+Cadastre espaços, divulgue eventos e fortaleça a cultura local.
+</p>
+
+<div class="btns" style="justify-content:center">
+<a class="btn btn1" href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">
+Criar perfil
+</a>
+
+<a class="btn btn2" href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">
+Comunidade
+</a>
+</div>
+
+</div>
+
+</section>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script>
+const n=document.querySelector('nav')
+
+onscroll=()=>{
+n.style.padding=scrollY>50?'14px 40px':'18px 40px'
+n.style.boxShadow=scrollY>50?'0 10px 30px rgba(0,0,0,.08)':'none'
+}
+
+new IntersectionObserver(e=>e.forEach(i=>
+i.isIntersecting&&i.target.classList.add('show')
+)).observe(document.body)
+
+document.querySelectorAll('.card').forEach(c=>
+new IntersectionObserver(e=>e.forEach(i=>
+i.isIntersecting&&i.target.classList.add('show')
+)).observe(c)
+)
+</script>
 
 </body>
 </html>
