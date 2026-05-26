@@ -333,8 +333,18 @@ min-height:420px
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+
+<div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+  <span id="apiStatusText">Modo Estático</span>
 </div>
+</div>
+
 
 </nav>
 
@@ -378,33 +388,274 @@ Este mapa futuramente exibirá artistas, coletivos, eventos e espaços culturais
 © 2026 • Plataforma de Mapeamento Cultural • IFSP
 </footer>
 
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <style>
+    .api-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      z-index: 100000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .api-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .api-modal-content {
+      background: #F7F2EA;
+      border: 4px solid #ffffffaa;
+      border-radius: 28px;
+      padding: 35px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      transform: translateY(30px) scale(0.95);
+      transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .api-modal.show .api-modal-content {
+      transform: translateY(0) scale(1);
+    }
+    .api-modal-content h3 {
+      color: #5B8C5A;
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .api-modal-content p {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .api-modal-content input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 2px solid #5b8c5a22;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #fff;
+      margin-bottom: 20px;
+      transition: .3s;
+    }
+    .api-modal-content input:focus {
+      border-color: #5B8C5A;
+      box-shadow: 0 0 10px rgba(91,140,90,0.15);
+    }
+    .api-modal-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    .api-modal-btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: .3s;
+      font-size: 0.9rem;
+    }
+    .api-modal-btn.save {
+      background: #5B8C5A;
+      color: #fff;
+    }
+    .api-modal-btn.save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+    }
+    .api-modal-btn.cancel {
+      background: #e0dcd5;
+      color: #555;
+    }
+    .api-modal-btn.cancel:hover {
+      background: #d4cfc8;
+    }
+  </style>
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+// Mock de Espaços Culturais para Fallback
+const MOCK_ESPACOS = [
+    {nome: "MAB - Museu de Antropologia do Vale do Paraíba", tipo: "Museu", endereco: "R. XV de Novembro, 143 - Centro, Jacareí - SP", lat: -23.3053, lng: -45.9658, descricao: "Espaço histórico que abriga acervos valiosos sobre a cultura, arte popular e a memória da sociedade do Vale do Paraíba.", contato: "mab@jacarei.sp.gov.br"},
+    {nome: "Sala Mário Lago", tipo: "Teatro", endereco: "Pça. Raul Chaves, 110 - Centro, Jacareí - SP", lat: -23.3061, lng: -45.9669, descricao: "Importante casa de espetáculos municipal, palco de apresentações teatrais, dança, exibições cinematográficas e concertos musicais gratuitos.", contato: "cultura@jacarei.sp.gov.br"},
+    {nome: "Parque dos Espanhóis", tipo: "Centro Cultural", endereco: "Av. Joaquim Alvarenga, 450 - Jardim Santa Maria, Jacareí - SP", lat: -23.2980, lng: -45.9750, descricao: "Espaço verde voltado ao lazer, com anfiteatro ao ar livre, quadras esportivas e encontros de coletivos artísticos nos finais de semana.", contato: "parque.espanhois@email.com"},
+    {nome: "Biblioteca Municipal Macedo Soares", tipo: "Biblioteca", endereco: "Av. Nove de Julho, 215 - Centro, Jacareí - SP", lat: -23.3035, lng: -45.9610, descricao: "Ambiente tranquilo de leitura com acervo de milhares de livros, espaço infantil, computadores para estudo e oficinas literárias.", contato: "biblioteca@jacarei.sp.gov.br"},
+    {nome: "Ateliê Vivo de Jacareí", tipo: "Ateliê Coletivo", endereco: "Rua Dr. Lúcio Malta, 380 - Centro, Jacareí - SP", lat: -23.3075, lng: -45.9640, descricao: "Espaço colaborativo independente de artistas locais, promovendo cursos de pintura, argila, escrita criativa e saraus abertos à comunidade.", contato: "atelievivo@email.com"}
+];
 
-const map=L.map('map',{
-zoomControl:true
-}).setView([-23.3053,-45.9658],13)
+// Gerenciador de API e Sincronização
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
+}
+
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado à API com sucesso! O mapa será recarregado.");
+        } else {
+            alert("⚠️ Servidor não respondeu. A página operará no Modo Estático com dados locais.");
+        }
+        window.location.reload();
+    });
+}
+
+// Configuração do Leaflet Map
+const map = L.map('map', {
+    zoomControl: true
+}).setView([-23.3053, -45.9658], 14);
 
 L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-attribution:'© OpenStreetMap'
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '© OpenStreetMap'
+    }
+).addTo(map);
+
+// Carregar Espaços no Mapa
+async function carregarEspacosNoMapa() {
+    const isOnline = await APIManager.checkStatus();
+    let espacos = MOCK_ESPACOS;
+    
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/espacos`);
+            if (res.ok) {
+                espacos = await res.json();
+            }
+        } catch(e) {
+            console.error("Erro ao puxar espaços da API, usando mock", e);
+        }
+    }
+    
+    // Remover marcadores anteriores se houver (não é necessário na primeira carga)
+    espacos.forEach(esp => {
+        if (esp.lat && esp.lng) {
+            L.marker([esp.lat, esp.lng])
+                .addTo(map)
+                .bindPopup(`
+                    <div style="font-family: 'Poppins', sans-serif; max-width:200px;">
+                        <h4 style="color:#5B8C5A; margin: 0 0 6px 0;">📍 ${esp.nome}</h4>
+                        <p style="font-size:0.8rem; color:#777; margin:0 0 6px 0;"><b>Tipo:</b> ${esp.tipo}</p>
+                        <p style="font-size:0.8rem; color:#555; margin:0 0 8px 0; line-height:1.4;">${esp.descricao || ''}</p>
+                        <p style="font-size:0.75rem; color:#666; margin:0;"><b>Endereço:</b> ${esp.endereco}</p>
+                    </div>
+                `);
+        }
+    });
+    
+    // Centralizar se URL contiver coordenadas específicas
+    const urlParams = new URLSearchParams(window.location.search);
+    const pLat = parseFloat(urlParams.get('lat'));
+    const pLng = parseFloat(urlParams.get('lng'));
+    if (!isNaN(pLat) && !isNaN(pLng)) {
+        map.setView([pLat, pLng], 17);
+    }
 }
-).addTo(map)
 
-L.marker([-23.3053,-45.9658])
-.addTo(map)
-.bindPopup('📍 Jacareí • Centro Cultural')
+// Inicializações
+const n = document.querySelector('nav');
+onscroll = () => {
+    n.style.padding = scrollY > 50 ? '14px 40px' : '18px 40px';
+    n.style.boxShadow = scrollY > 50 ? '0 10px 30px rgba(0,0,0,.08)' : 'none';
+};
 
-const n=document.querySelector('nav')
-
-onscroll=()=>{
-n.style.padding=scrollY>50?'14px 40px':'18px 40px'
-n.style.boxShadow=scrollY>50?'0 10px 30px rgba(0,0,0,.08)':'none'
-}
-
+// Executar ao carregar
+carregarEspacosNoMapa();
 </script>
+
 
 </body>
 </html>

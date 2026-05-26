@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calendário Cultural • Jacareí</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --v: #5B8C5A;
+  --vc: #B8D8BA;
+  --b: #F7F2EA;
+  --t: #3B3B3B;
+  --s: 0 10px 40px rgba(91,140,90,.15);
+}
+body {
+  font-family: Poppins, sans-serif;
+  background: var(--b);
+  color: var(--t);
+  overflow-x: hidden;
+}
+body:before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 10% 30%, #5b8c5a11, transparent 20%),
+    radial-gradient(circle at 90% 80%, #b8d8ba44, transparent 20%);
+}
+.leaf {
+  position: fixed;
+  width: 30px;
+  opacity: .12;
+  z-index: -1;
+  animation: fall linear infinite;
+}
+.leaf:nth-child(1) { left: 10%; animation-duration: 20s; }
+.leaf:nth-child(2) { left: 80%; animation-duration: 24s; }
+@keyframes fall {
+  from { top: -100px; transform: rotate(0); }
+  to { top: 110vh; transform: rotate(360deg); }
+}
+
+/* Navbar */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffffbb;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #5b8c5a22;
+  z-index: 999;
+  transition: .4s;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo img {
+  width: 58px;
+  animation: logo 4s ease-in-out infinite;
+}
+@keyframes logo { 50% { transform: translateY(-8px); } }
+.logo b { display: block; font-size: 1.1rem; color: var(--v); }
+.logo span { font-size: .85rem; color: #777; }
+.links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+a {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 500;
+  color: var(--t);
+  transition: .35s;
+}
+a:hover, .active {
+  background: var(--v);
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px #5b8c5a33;
+}
+
+/* Hero Section */
+.hero {
+  padding: 170px 30px 40px;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #5b8c5a22;
+  color: var(--v);
+  font-weight: 600;
+  margin-bottom: 24px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 50% { transform: scale(1.05); } }
+h1 { font-size: 4.5rem; color: var(--v); margin-bottom: 20px; line-height: 1; }
+p { max-width: 800px; margin: auto; line-height: 1.9; color: #666; }
+
+/* Calendar Section */
+.calendar-container {
+  max-width: 1100px;
+  margin: 0 auto 100px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+}
+.calendar-box {
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-radius: 35px;
+  padding: 30px;
+  box-shadow: var(--s);
+  border: 6px solid #ffffffaa;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.calendar-header h2 {
+  color: var(--v);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.calendar-nav-btn {
+  background: var(--v);
+  color: #fff;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: .3s;
+  box-shadow: 0 4px 10px rgba(91,140,90,0.2);
+}
+.calendar-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(91,140,90,0.3);
+}
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5px;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: .3s;
+  font-weight: 500;
+  position: relative;
+  background: #ffffff66;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+.day-cell:hover {
+  background: #ffffffbb;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+.day-cell.empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+  pointer-events: none;
+}
+.day-cell.today {
+  border: 2px solid var(--v);
+  font-weight: bold;
+  color: var(--v);
+}
+.day-cell.selected {
+  background: var(--v) !important;
+  color: #fff !important;
+}
+.event-dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  width: 100%;
+}
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5B8C5A;
+}
+.selected .event-dot {
+  background: #fff;
+}
+
+/* Event List Area */
+.event-details-box {
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-radius: 35px;
+  padding: 30px;
+  box-shadow: var(--s);
+  border: 6px solid #ffffffaa;
+  display: flex;
+  flex-direction: column;
+}
+.event-details-box h3 {
+  color: var(--v);
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #5b8c5a22;
+  padding-bottom: 10px;
+}
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 480px;
+}
+.event-card-mini {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+  border: 1px solid #5b8c5a11;
+  transition: .3s;
+}
+.event-card-mini:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(91,140,90,0.1);
+  border-color: var(--v);
+}
+.event-card-mini h4 {
+  color: var(--v);
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.event-card-mini p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #666;
+}
+.event-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.8rem !important;
+  color: #888;
+  font-weight: 500;
+}
+.no-events {
+  text-align: center;
+  color: #888;
+  padding: 45px 0;
+  font-style: italic;
+}
+
+/* API Config Modal */
+.api-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.api-modal-content {
+  background: #F7F2EA;
+  border: 4px solid #ffffffaa;
+  border-radius: 28px;
+  padding: 35px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transform: translateY(30px) scale(0.95);
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show .api-modal-content {
+  transform: translateY(0) scale(1);
+}
+.api-modal-content h3 {
+  color: #5B8C5A;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.api-modal-content p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.api-modal-content input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  margin-bottom: 20px;
+  transition: .3s;
+}
+.api-modal-content input:focus {
+  border-color: #5B8C5A;
+  box-shadow: 0 0 10px rgba(91,140,90,0.15);
+}
+.api-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.api-modal-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: .3s;
+  font-size: 0.9rem;
+}
+.api-modal-btn.save {
+  background: #5B8C5A;
+  color: #fff;
+}
+.api-modal-btn.save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+}
+.api-modal-btn.cancel {
+  background: #e0dcd5;
+  color: #555;
+}
+
+footer { padding: 40px; text-align: center; color: #777; }
+
+@media(max-width: 900px) {
+  .calendar-container { grid-template-columns: 1fr; }
+  h1 { font-size: 3rem; }
+  .hero { padding-top: 240px; }
+}
+@media(max-width: 700px) {
+  nav { padding: 14px; flex-direction: column; gap: 15px; }
+  .links { justify-content: center; }
+  .hero { padding-top: 260px; }
+}
+</style>
+</head>
+
+<body>
+
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+
+<nav>
+<div class="logo">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+  <div>
+    <b>Mapeamento Cultural</b>
+    <span>Jacareí • IFSP</span>
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/" class="active">Calendário</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+
+  <div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+    <span id="apiStatusText">Modo Estático</span>
+  </div>
+</div>
+</nav>
+
+<section class="hero">
+  <div class="badge">📅 Agenda de Vivências Culturais</div>
+  <h1>Calendário Cultural</h1>
+  <p>Fique por dentro das oficinas, apresentações, feiras e festivais de arte de Jacareí. Escolha uma data no calendário para ver os detalhes dos eventos programados.</p>
+</section>
+
+<section class="calendar-container">
+  <!-- Grade do Calendário -->
+  <div class="calendar-box">
+    <div class="calendar-header">
+      <button class="calendar-nav-btn" onclick="navegarMes(-1)">&lt;</button>
+      <h2 id="currentMonthYear">Junho 2026</h2>
+      <button class="calendar-nav-btn" onclick="navegarMes(1)">&gt;</button>
+    </div>
+    
+    <div class="weekdays">
+      <div>Dom</div>
+      <div>Seg</div>
+      <div>Ter</div>
+      <div>Qua</div>
+      <div>Qui</div>
+      <div>Sex</div>
+      <div>Sáb</div>
+    </div>
+    
+    <div class="days-grid" id="daysGrid">
+      <!-- Gerado via Javascript -->
+    </div>
+  </div>
+
+  <!-- Painel de Eventos do Dia -->
+  <div class="event-details-box">
+    <h3 id="eventBoxTitle">Eventos em ...</h3>
+    <div class="event-list" id="eventList">
+      <div class="no-events">Selecione um dia para visualizar os eventos programados.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script>
+// Mock de Eventos para Fallback
+const MOCK_EVENTOS = [
+    {id: 1, titulo: "Feira de Artesanato & Memória", data: "2026-06-15", horario: "10:00", local: "Pátio dos Trilhos", descricao: "Uma feira vibrante reunindo os melhores artesãos de Jacareí, com oficinas gratuitas de cerâmica, música ao vivo e comidas típicas regionais.", organizador: "Ana Silva"},
+    {id: 2, titulo: "Concerto Especial: Orquestra Sinfônica de Jacareí", data: "2026-06-20", horario: "20:00", local: "Sala Mário Lago", descricao: "Apresentação emocionante da Orquestra Sinfônica Municipal interpretando clássicos brasileiros e trilhas sonoras famosas do cinema.", organizador: "Secretaria de Cultura"},
+    {id: 3, titulo: "Festival de Teatro de Jacareí (FESTE)", data: "2026-07-05", horario: "18:00", local: "Praça Raul Chaves", descricao: "Grande festival reunindo trupes de teatro locais e convidadas de todo o país para apresentações abertas, intervenções públicas e oficinas formativas.", organizador: "Coletivo Jacareí de Teatro"},
+    {id: 4, titulo: "Exposição Olhares Jacareí", data: "2026-06-28", horario: "14:00", local: "MAB - Museu de Antropologia", descricao: "Exposição fotográfica e de murais digitais destacando a arquitetura colonial de Jacareí e a diversidade étnica da população valeparaibana.", organizador: "Juliana Mendes"},
+    {id: 5, titulo: "Encontro de Moçambique & Capoeira", data: "2026-07-12", horario: "09:00", local: "Praça do Rosário", descricao: "Celebração das tradições populares afro-brasileiras com roda de capoeira angola, apresentações do grupo de Moçambique, cantos rituais e almoço comunitário.", organizador: "Mestre Benedito"}
+];
+
+// Gerenciador de API
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
+}
+
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado à API com sucesso! O calendário será recarregado.");
+        } else {
+            alert("⚠️ Servidor não respondeu. Operando em Modo Estático com dados mockados.");
+        }
+        window.location.reload();
+    });
+}
+
+// LÓGICA DO CALENDÁRIO
+
+let currentDate = new Date(2026, 5, 1); // Começar em Junho de 2026 para ver mock de eventos
+let eventosDoMes = [];
+
+const nomesMeses = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
+async function carregarEventos() {
+    const isOnline = await APIManager.checkStatus();
+    let eventos = MOCK_EVENTOS;
+    
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/eventos`);
+            if (res.ok) {
+                eventos = await res.json();
+            }
+        } catch(e) {
+            console.error("Erro ao carregar eventos da API", e);
+        }
+    }
+    return eventos;
+}
+
+async function renderCalendar() {
+    const grid = document.getElementById('daysGrid');
+    const headerTitle = document.getElementById('currentMonthYear');
+    grid.innerHTML = "";
+    
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    headerTitle.innerText = `${nomesMeses[month]} ${year}`;
+    
+    // Obter todos os eventos
+    const todosEventos = await carregarEventos();
+    
+    // Primeiro dia da semana do mês
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    // Último dia do mês
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    
+    // Células vazias iniciais
+    for (let i = 0; i < firstDayIndex; i++) {
+        const cell = document.createElement('div');
+        cell.className = "day-cell empty";
+        grid.appendChild(cell);
+    }
+    
+    // Células dos dias
+    for (let day = 1; day <= lastDay; day++) {
+        const cell = document.createElement('div');
+        cell.className = "day-cell";
+        
+        const dayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        // Número do dia
+        const numSpan = document.createElement('span');
+        numSpan.innerText = day;
+        cell.appendChild(numSpan);
+        
+        // Destacar hoje
+        const hoje = new Date();
+        if (hoje.getDate() === day && hoje.getMonth() === month && hoje.getFullYear() === year) {
+            cell.classList.add('today');
+        }
+        
+        // Filtrar eventos deste dia específico
+        const eventosDoDia = todosEventos.filter(ev => ev.data === dayString);
+        if (eventosDoDia.length > 0) {
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = "event-dots";
+            eventosDoDia.forEach(() => {
+                const dot = document.createElement('div');
+                dot.className = "event-dot";
+                dotsContainer.appendChild(dot);
+            });
+            cell.appendChild(dotsContainer);
+        }
+        
+        // Evento de clique na célula
+        cell.onclick = () => {
+            document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('selected'));
+            cell.classList.add('selected');
+            exibirDetalhesDia(day, month, year, eventosDoDia);
+        };
+        
+        grid.appendChild(cell);
+    }
+}
+
+function exibirDetalhesDia(day, month, year, eventos) {
+    const list = document.getElementById('eventList');
+    const title = document.getElementById('eventBoxTitle');
+    
+    title.innerText = `Agenda • ${day} de ${nomesMeses[month]}`;
+    list.innerHTML = "";
+    
+    if (eventos.length === 0) {
+        list.innerHTML = `<div class="no-events">Nenhum evento cultural agendado para este dia.</div>`;
+        return;
+    }
+    
+    eventos.forEach(ev => {
+        const miniCard = document.createElement('div');
+        miniCard.className = "event-card-mini";
+        
+        miniCard.innerHTML = `
+            <h4>${ev.titulo}</h4>
+            <p>${ev.descricao}</p>
+            <div class="event-meta">
+                <span>⏰ ${ev.horario || 'Horário não informado'}</span>
+                <span>📍 ${ev.local}</span>
+            </div>
+            <div class="event-meta" style="margin-top:5px; color:var(--v);">
+                <span>Organização: ${ev.organizador || 'Independente'}</span>
+            </div>
+        `;
+        list.appendChild(miniCard);
+    });
+}
+
+function navegarMes(dir) {
+    currentDate.setMonth(currentDate.getMonth() + dir);
+    renderCalendar();
+}
+
+// Inicializações da barra superior
+const n = document.querySelector('nav');
+onscroll = () => {
+    n.style.padding = scrollY > 50 ? '14px 40px' : '18px 40px';
+    n.style.boxShadow = scrollY > 50 ? '0 10px 30px rgba(0,0,0,.08)' : 'none';
+};
+
+// Execução ao carregar
+APIManager.checkStatus().then(() => {
+    renderCalendar();
+});
+</script>
+</body>
+</html>

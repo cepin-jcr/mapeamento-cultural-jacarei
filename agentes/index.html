@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agentes Culturais • Jacareí</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --v: #5B8C5A;
+  --vc: #B8D8BA;
+  --b: #F7F2EA;
+  --t: #3B3B3B;
+  --s: 0 10px 40px rgba(91,140,90,.15);
+}
+body {
+  font-family: Poppins, sans-serif;
+  background: var(--b);
+  color: var(--t);
+  overflow-x: hidden;
+}
+body:before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 20% 20%, #5b8c5a11, transparent 20%),
+    radial-gradient(circle at 80% 80%, #b8d8ba44, transparent 20%);
+}
+.leaf {
+  position: fixed;
+  width: 30px;
+  opacity: .12;
+  z-index: -1;
+  animation: fall linear infinite;
+}
+.leaf:nth-child(1) { left: 8%; animation-duration: 21s; }
+.leaf:nth-child(2) { left: 82%; animation-duration: 25s; }
+@keyframes fall {
+  from { top: -100px; transform: rotate(0); }
+  to { top: 110vh; transform: rotate(360deg); }
+}
+
+/* Navbar */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffffbb;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #5b8c5a22;
+  z-index: 999;
+  transition: .4s;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo img {
+  width: 58px;
+  animation: logo 4s ease-in-out infinite;
+}
+@keyframes logo { 50% { transform: translateY(-8px); } }
+.logo b { display: block; font-size: 1.1rem; color: var(--v); }
+.logo span { font-size: .85rem; color: #777; }
+.links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+a {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 500;
+  color: var(--t);
+  transition: .35s;
+}
+a:hover, .active {
+  background: var(--v);
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px #5b8c5a33;
+}
+
+/* Hero Section */
+.hero {
+  padding: 170px 30px 40px;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #5b8c5a22;
+  color: var(--v);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+h1 { font-size: 4.5rem; color: var(--v); margin-bottom: 20px; line-height: 1; }
+p { max-width: 800px; margin: auto; line-height: 1.9; color: #666; }
+
+/* Filter Container */
+.search-filter-box {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.search-input-wrapper {
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+}
+.search-input-wrapper input {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 20px;
+  border: 4px solid #ffffffaa;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #ffffffb3;
+  box-shadow: var(--s);
+  transition: .3s;
+}
+.search-input-wrapper input:focus {
+  border-color: var(--v);
+  background: #fff;
+}
+.category-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cat-btn {
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 2px solid #5b8c5a22;
+  background: #ffffffaa;
+  color: var(--t);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: .3s;
+}
+.cat-btn:hover, .cat-btn.active {
+  background: var(--v);
+  color: #fff;
+  border-color: var(--v);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(91,140,90,0.15);
+}
+
+/* Grid layout for agents cards */
+.agents-grid {
+  max-width: 1200px;
+  margin: 0 auto 100px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+.agent-card {
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 30px;
+  box-shadow: var(--s);
+  border: 6px solid #ffffffaa;
+  transition: .5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.agent-card:hover {
+  transform: translateY(-14px) rotate(-1deg);
+  box-shadow: 0 20px 40px rgba(91,140,90,0.2);
+  border-color: #ffffff;
+}
+.agent-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid #ffffff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  transition: .5s;
+}
+.agent-card:hover .agent-avatar {
+  transform: scale(1.08) rotate(3deg);
+  box-shadow: 0 15px 30px rgba(91,140,90,0.25);
+}
+.agent-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.agent-card h3 {
+  font-size: 1.35rem;
+  color: var(--v);
+  margin-bottom: 8px;
+}
+.agent-expertise {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: #5b8c5a1a;
+  color: var(--v);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.agent-card p {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #666;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+.agent-contact-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--v);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: .3s;
+  box-shadow: 0 4px 10px rgba(91,140,90,0.2);
+  border: none;
+  cursor: pointer;
+}
+.agent-contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(91,140,90,0.3);
+}
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  color: #888;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* API Modal */
+.api-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.api-modal-content {
+  background: #F7F2EA;
+  border: 4px solid #ffffffaa;
+  border-radius: 28px;
+  padding: 35px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transform: translateY(30px) scale(0.95);
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show .api-modal-content {
+  transform: translateY(0) scale(1);
+}
+.api-modal-content h3 {
+  color: #5B8C5A;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.api-modal-content p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.api-modal-content input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  margin-bottom: 20px;
+  transition: .3s;
+}
+.api-modal-content input:focus {
+  border-color: #5B8C5A;
+  box-shadow: 0 0 10px rgba(91,140,90,0.15);
+}
+.api-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.api-modal-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: .3s;
+  font-size: 0.9rem;
+}
+.api-modal-btn.save {
+  background: #5B8C5A;
+  color: #fff;
+}
+.api-modal-btn.save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+}
+.api-modal-btn.cancel {
+  background: #e0dcd5;
+  color: #555;
+}
+
+footer { padding: 40px; text-align: center; color: #777; }
+
+@media(max-width: 900px) {
+  h1 { font-size: 3rem; }
+  .hero { padding-top: 240px; }
+}
+@media(max-width: 700px) {
+  nav { padding: 14px; flex-direction: column; gap: 15px; }
+  .links { justify-content: center; }
+  .hero { padding-top: 260px; }
+}
+</style>
+</head>
+
+<body>
+
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+
+<nav>
+<div class="logo">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+  <div>
+    <b>Mapeamento Cultural</b>
+    <span>Jacareí • IFSP</span>
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/" class="active">Agentes</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+
+  <div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+    <span id="apiStatusText">Modo Estático</span>
+  </div>
+</div>
+</nav>
+
+<section class="hero">
+  <div class="badge">🎨 Rostos, mentes e talentos locais</div>
+  <h1>Agentes Culturais</h1>
+  <p>Conheça os artesãos, músicos, atores, escritores e produtores culturais que dão vida, cor e história à Jacareí.</p>
+</section>
+
+<!-- Painel de Busca e Filtros -->
+<section class="search-filter-box">
+  <div class="search-input-wrapper">
+    <input type="text" id="searchInput" placeholder="Pesquisar agente por nome, bio ou especialidade..." oninput="filtrarAgentes()">
+  </div>
+  <div class="category-filters">
+    <button class="cat-btn active" onclick="filtrarArea('todos', this)">Todos</button>
+    <button class="cat-btn" onclick="filtrarArea('Artesanato', this)">Artesanato</button>
+    <button class="cat-btn" onclick="filtrarArea('Música', this)">Música</button>
+    <button class="cat-btn" onclick="filtrarArea('Teatro', this)">Teatro</button>
+    <button class="cat-btn" onclick="filtrarArea('Cultura Popular', this)">Cultura Popular</button>
+  </div>
+</section>
+
+<!-- Grid de Agentes -->
+<section class="agents-grid" id="agentsGrid">
+  <!-- Gerado dinamicamente -->
+</section>
+
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script>
+// Mock de Agentes para Fallback
+const MOCK_AGENTES = [
+    {id: 1, nome: "Ana Silva", area: "Artesanato", bio: "Artesã local especializada em crochê e cerâmica com elementos tradicionais do Vale do Paraíba.", contato: "ana.artes@email.com", foto: "https://picsum.photos/400/400?1"},
+    {id: 2, nome: "Carlos Souza", area: "Música", bio: "Músico, compositor e violonista clássico, com projetos sociais de educação musical para jovens em Jacareí.", contato: "carlossouza@email.com", foto: "https://picsum.photos/400/400?2"},
+    {id: 3, nome: "Coletivo Jacareí de Teatro", area: "Teatro", bio: "Grupo independente focado em teatro de rua, intervenções urbanas e contação de histórias históricas.", contato: "coletivojacarei@email.com", foto: "https://picsum.photos/400/400?3"},
+    {id: 4, nome: "Juliana Mendes", area: "Artes Visuais", bio: "Artista visual, muralista e pintora que explora as paisagens naturais e o patrimônio histórico da região.", contato: "juliana.mendes@email.com", foto: "https://picsum.photos/400/400?4"},
+    {id: 5, nome: "Mestre Benedito", area: "Cultura Popular", bio: "Líder comunitário do grupo de Moçambique de Jacareí, preservando a dança e os cantos de raiz afro-brasileira.", contato: "benedito.popular@email.com", foto: "https://picsum.photos/400/400?5"}
+];
+
+let todosAgentes = [];
+let areaAtiva = 'todos';
+
+// Gerenciador de API
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
+}
+
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado com sucesso! A lista de agentes será recarregada.");
+        } else {
+            alert("⚠️ Servidor indisponível. A lista usará o Modo Estático.");
+        }
+        window.location.reload();
+    });
+}
+
+// LOGICA DOS AGENTES
+
+async function carregarAgentes() {
+    const isOnline = await APIManager.checkStatus();
+    todosAgentes = MOCK_AGENTES;
+    
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/agentes`);
+            if (res.ok) {
+                todosAgentes = await res.json();
+            }
+        } catch(e) {
+            console.error("Erro ao carregar agentes da API", e);
+        }
+    }
+    renderizarGrid(todosAgentes);
+}
+
+function renderizarGrid(agentes) {
+    const grid = document.getElementById('agentsGrid');
+    grid.innerHTML = "";
+    
+    if (agentes.length === 0) {
+        grid.innerHTML = `<div class="no-results">Nenhum agente cultural localizado para a busca atual.</div>`;
+        return;
+    }
+    
+    agentes.forEach(ag => {
+        const card = document.createElement('div');
+        card.className = "agent-card";
+        
+        card.innerHTML = `
+            <div class="agent-avatar">
+                <img src="${ag.foto || 'https://picsum.photos/400/400?random=' + ag.id}" alt="${ag.nome}">
+            </div>
+            <span class="agent-expertise">#${ag.area}</span>
+            <h3>${ag.nome}</h3>
+            <p>${ag.bio || 'Sem biografia disponível.'}</p>
+            <button class="agent-contact-btn" onclick="location.href='mailto:${ag.contato}'">Entrar em Contato</button>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function filtrarAgentes() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    
+    const filtrados = todosAgentes.filter(ag => {
+        const matchesQuery = ag.nome.toLowerCase().includes(query) || 
+                             ag.area.toLowerCase().includes(query) || 
+                             (ag.bio && ag.bio.toLowerCase().includes(query));
+                             
+        const matchesArea = (areaAtiva === 'todos') || 
+                            ag.area.toLowerCase().includes(areaAtiva.toLowerCase());
+                                
+        return matchesQuery && matchesArea;
+    });
+    
+    renderizarGrid(filtrados);
+}
+
+function filtrarArea(area, button) {
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    areaAtiva = area;
+    filtrarAgentes();
+}
+
+// Inicializações da barra superior
+const n = document.querySelector('nav');
+onscroll = () => {
+    n.style.padding = scrollY > 50 ? '14px 40px' : '18px 40px';
+    n.style.boxShadow = scrollY > 50 ? '0 10px 30px rgba(0,0,0,.08)' : 'none';
+};
+
+// Execução ao carregar
+carregarAgentes();
+</script>
+</body>
+</html>

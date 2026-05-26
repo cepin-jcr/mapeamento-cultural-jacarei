@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mural da Comunidade • Mapeamento Cultural</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --v: #5B8C5A;
+  --vc: #B8D8BA;
+  --b: #F7F2EA;
+  --t: #3B3B3B;
+  --s: 0 10px 40px rgba(91,140,90,.15);
+}
+body {
+  font-family: Poppins, sans-serif;
+  background: var(--b);
+  color: var(--t);
+  overflow-x: hidden;
+}
+body:before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 10% 20%, #5b8c5a11, transparent 20%),
+    radial-gradient(circle at 80% 80%, #b8d8ba44, transparent 20%);
+}
+.leaf {
+  position: fixed;
+  width: 30px;
+  opacity: .12;
+  z-index: -1;
+  animation: fall linear infinite;
+}
+.leaf:nth-child(1) { left: 12%; animation-duration: 18s; }
+.leaf:nth-child(2) { left: 78%; animation-duration: 22s; }
+@keyframes fall {
+  from { top: -100px; transform: rotate(0); }
+  to { top: 110vh; transform: rotate(360deg); }
+}
+
+/* Navbar */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffffbb;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #5b8c5a22;
+  z-index: 999;
+  transition: .4s;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo img {
+  width: 58px;
+  animation: logo 4s ease-in-out infinite;
+}
+@keyframes logo { 50% { transform: translateY(-8px); } }
+.logo b { display: block; font-size: 1.1rem; color: var(--v); }
+.logo span { font-size: .85rem; color: #777; }
+.links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+a {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 500;
+  color: var(--t);
+  transition: .35s;
+}
+a:hover, .active {
+  background: var(--v);
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px #5b8c5a33;
+}
+
+/* Hero Section */
+.hero {
+  padding: 170px 30px 40px;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #5b8c5a22;
+  color: var(--v);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+h1 { font-size: 4.5rem; color: var(--v); margin-bottom: 20px; line-height: 1; }
+p { max-width: 800px; margin: auto; line-height: 1.9; color: #666; }
+
+/* Chat Container Layout */
+.chat-container {
+  max-width: 900px;
+  margin: 0 auto 100px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-radius: 35px;
+  box-shadow: var(--s);
+  border: 6px solid #ffffffaa;
+  overflow: hidden;
+}
+
+/* Messages Box Area */
+.messages-box {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Message Styles */
+.message-card {
+  display: flex;
+  gap: 16px;
+  animation: messageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  align-items: flex-start;
+}
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.message-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.1rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+.message-bubble {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px 20px;
+  border: 1px solid #5b8c5a11;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  max-width: 80%;
+}
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 12px;
+}
+.message-sender {
+  font-weight: 700;
+  color: var(--v);
+  font-size: 0.95rem;
+}
+.message-time {
+  font-size: 0.72rem;
+  color: #aaa;
+  font-weight: 500;
+}
+.message-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #555;
+  word-break: break-word;
+}
+
+/* Input Area Style */
+.input-area {
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.7);
+  border-top: 1px solid #5b8c5a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+.name-input {
+  width: 200px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.92rem;
+  background: #fff;
+  font-weight: 600;
+  transition: .3s;
+}
+.message-input {
+  flex: 1;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.92rem;
+  background: #fff;
+  transition: .3s;
+}
+.name-input:focus, .message-input:focus {
+  border-color: var(--v);
+  box-shadow: 0 0 10px rgba(91,140,90,0.15);
+}
+.send-btn {
+  background: var(--v);
+  color: #fff;
+  border: none;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(91,140,90,0.2);
+}
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 18px rgba(91,140,90,0.3);
+}
+
+/* API Modal */
+.api-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.api-modal-content {
+  background: #F7F2EA;
+  border: 4px solid #ffffffaa;
+  border-radius: 28px;
+  padding: 35px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transform: translateY(30px) scale(0.95);
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show .api-modal-content {
+  transform: translateY(0) scale(1);
+}
+.api-modal-content h3 {
+  color: #5B8C5A;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.api-modal-content p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.api-modal-content input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  margin-bottom: 20px;
+  transition: .3s;
+}
+.api-modal-content input:focus {
+  border-color: #5B8C5A;
+  box-shadow: 0 0 10px rgba(91,140,90,0.15);
+}
+.api-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.api-modal-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: .3s;
+  font-size: 0.9rem;
+}
+.api-modal-btn.save {
+  background: #5B8C5A;
+  color: #fff;
+}
+.api-modal-btn.save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+}
+.api-modal-btn.cancel {
+  background: #e0dcd5;
+  color: #555;
+}
+
+footer { padding: 40px; text-align: center; color: #777; }
+
+@media(max-width: 900px) {
+  h1 { font-size: 3rem; }
+  .hero { padding-top: 240px; }
+  .chat-container { height: 500px; }
+}
+@media(max-width: 700px) {
+  nav { padding: 14px; flex-direction: column; gap: 15px; }
+  .links { justify-content: center; }
+  .hero { padding-top: 260px; }
+  .input-row { flex-direction: column; }
+  .name-input { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+
+<nav>
+<div class="logo">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+  <div>
+    <b>Mapeamento Cultural</b>
+    <span>Jacareí • IFSP</span>
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/" class="active">Mensagens</a>
+
+  <div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+    <span id="apiStatusText">Modo Estático</span>
+  </div>
+</div>
+</nav>
+
+<section class="hero">
+  <div class="badge">💬 Conexões e ideias em rede</div>
+  <h1>Mural da Comunidade</h1>
+  <p>Deixe recados, peça colaborações para eventos, ofereça parcerias ou envie dúvidas para os artistas e coletivos de Jacareí.</p>
+</section>
+
+<!-- Chat Area -->
+<section class="chat-container">
+  <div class="messages-box" id="messagesBox">
+    <!-- Mensagens injetadas via Javascript -->
+  </div>
+  
+  <div class="input-area">
+    <div class="input-row">
+      <input type="text" id="chatName" class="name-input" placeholder="Seu Nome..." required>
+      <input type="text" id="chatText" class="message-input" placeholder="Digite seu aviso ou recado para a comunidade..." onkeydown="checarEnter(event)" required>
+      <button class="send-btn" onclick="enviarMensagem()">Publicar</button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script>
+// Mock de Mensagens para Fallback
+const MOCK_MENSAGENS = [
+    {id: 1, nome: "Sistema", texto: "Olá a todos! Sejam muito bem-vindos ao Mural Cultural da comunidade de Jacareí! 🌿 Use este espaço para postar recados, fechar parcerias artísticas, convidar para saraus ou compartilhar contatos!", data_envio: "2026-05-26 15:00:00"},
+    {id: 2, nome: "Ana Silva", texto: "Estou organizando a próxima Feira de Artesanato no Pátio dos Trilhos e procuro músicos locais para apresentações acústicas curtas de 30 minutos. Quem tiver interesse, me manda um email! 🎶", data_envio: "2026-05-26 15:05:00"},
+    {id: 3, nome: "Carlos Souza", texto: "Olá Ana! Tenho total interesse! Podemos apresentar uma seleção de MPB instrumental e violão clássico. Vou te mandar um email com alguns vídeos de apresentações anteriores!", data_envio: "2026-05-26 15:10:00"},
+    {id: 4, nome: "Coletivo Jacareí de Teatro", texto: "Lembrando que no próximo domingo teremos oficina gratuita de expressão corporal na Praça Raul Chaves a partir das 15h. Tragam roupas confortáveis e garrafas d'água! 🎭", data_envio: "2026-05-26 15:15:00"},
+    {id: 5, nome: "Juliana Mendes", texto: "Estou finalizando um mural artístico de 5 metros no centro e adoraria ajuda para colorir as partes baixas. É uma vivência muito legal! Quem vem comigo?", data_envio: "2026-05-26 15:20:00"}
+];
+
+let ultimaMensagemId = 0;
+let pollingInterval = null;
+
+// Gerenciador de API
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
+}
+
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado com sucesso! Mural sincronizado.");
+        } else {
+            alert("⚠️ Servidor indisponível. Operando em Modo Estático offline.");
+        }
+        window.location.reload();
+    });
+}
+
+// LÓGICA DO CHAT E MURAL
+
+// Gera uma cor HSL baseada no hash do nome do remetente (Visual Premium Harmonioso)
+function obterCorPorNome(nome) {
+    let hash = 0;
+    for (let i = 0; i < nome.length; i++) {
+        hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 60%, 45%)`;
+}
+
+// Obtém as iniciais do nome do remetente
+function obterIniciais(nome) {
+    const partes = nome.split(' ');
+    let iniciais = partes[0].charAt(0);
+    if (partes.length > 1) {
+        iniciais += partes[partes.length - 1].charAt(0);
+    }
+    return iniciais.toUpperCase();
+}
+
+function formatarHora(dataStr) {
+    if (!dataStr) return "";
+    // O banco SQLite retorna timestamps como YYYY-MM-DD HH:MM:SS ou ISO strings
+    try {
+        const d = new Date(dataStr.replace(/-/g, '/'));
+        if (isNaN(d.getTime())) {
+            // Se falhar o parse nativo, pega o final
+            const partes = dataStr.split(' ');
+            if (partes.length === 2) return partes[1].slice(0, 5);
+            return dataStr;
+        }
+        return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } catch(e) {
+        return dataStr;
+    }
+}
+
+async function puxarMensagens() {
+    const isOnline = await APIManager.checkStatus();
+    let mensagens = [];
+    
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/mensagens`);
+            if (res.ok) {
+                mensagens = await res.json();
+            }
+        } catch(e) {
+            console.error("Erro de polling de mensagens", e);
+        }
+    } else {
+        // Fallback local do localStorage para manter mensagens enviadas pelo usuário offline
+        const locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
+        mensagens = [...MOCK_MENSAGENS, ...locais];
+    }
+    
+    desenharMensagens(mensagens);
+}
+
+function desenharMensagens(mensagens) {
+    const box = document.getElementById('messagesBox');
+    
+    // Evita redesenhar se o número de mensagens for o mesmo e o ID da última não mudar
+    if (mensagens.length > 0) {
+        const ultima = mensagens[mensagens.length - 1];
+        if (ultima.id === ultimaMensagemId) return;
+        ultimaMensagemId = ultima.id;
+    }
+    
+    box.innerHTML = "";
+    
+    mensagens.forEach(msg => {
+        const card = document.createElement('div');
+        card.className = "message-card";
+        
+        const iniciais = obterIniciais(msg.nome);
+        const cor = obterCorPorNome(msg.nome);
+        
+        card.innerHTML = `
+            <div class="message-avatar" style="background: ${cor}">${iniciais}</div>
+            <div class="message-bubble">
+                <div class="message-header">
+                    <span class="message-sender" style="color: ${cor}">${msg.nome}</span>
+                    <span class="message-time">⏰ ${formatarHora(msg.data_envio)}</span>
+                </div>
+                <div class="message-text">${msg.texto}</div>
+            </div>
+        `;
+        box.appendChild(card);
+    });
+    
+    // Scroll suave para a última mensagem
+    box.scrollTop = box.scrollHeight;
+}
+
+async function enviarMensagem() {
+    const nameInput = document.getElementById('chatName');
+    const textInput = document.getElementById('chatText');
+    
+    const nome = nameInput.value.trim();
+    const texto = textInput.value.trim();
+    
+    if (!nome || !texto) {
+        alert("Preencha seu nome e a mensagem!");
+        return;
+    }
+    
+    // Salva o nome no localStorage para conveniência nas próximas visitas
+    localStorage.setItem('chat_sender_name', nome);
+    
+    const payload = { nome, texto };
+    const isOnline = await APIManager.checkStatus();
+    
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/mensagens`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                textInput.value = "";
+                puxarMensagens();
+            }
+        } catch(e) {
+            alert("Erro ao enviar mensagem!");
+        }
+    } else {
+        // Enviar offline
+        let locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
+        const agora = new Date();
+        const nova = {
+            id: Date.now(),
+            nome: nome,
+            texto: texto,
+            data_envio: agora.getHours().toString().padStart(2, '0') + ":" + agora.getMinutes().toString().padStart(2, '0')
+        };
+        locais.push(nova);
+        localStorage.setItem('chat_mensagens_offline', JSON.stringify(locais));
+        
+        textInput.value = "";
+        puxarMensagens();
+    }
+}
+
+function checarEnter(e) {
+    if (e.key === 'Enter') {
+        enviarMensagem();
+    }
+}
+
+// Inicializações da barra superior e preenchimento de nome
+const n = document.querySelector('nav');
+onscroll = () => {
+    n.style.padding = scrollY > 50 ? '14px 40px' : '18px 40px';
+    n.style.boxShadow = scrollY > 50 ? '0 10px 30px rgba(0,0,0,.08)' : 'none';
+};
+
+const nomeSalvo = localStorage.getItem('chat_sender_name');
+if (nomeSalvo) {
+    document.getElementById('chatName').value = nomeSalvo;
+}
+
+// Iniciar Polling (A cada 4 segundos)
+puxarMensagens();
+pollingInterval = setInterval(puxarMensagens, 4000);
+</script>
+</body>
+</html>

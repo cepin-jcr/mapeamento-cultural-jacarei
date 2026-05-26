@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Perfil • Mapeamento Cultural</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --v: #5B8C5A;
+  --vc: #B8D8BA;
+  --b: #F7F2EA;
+  --t: #3B3B3B;
+  --s: 0 10px 40px rgba(91,140,90,.15);
+}
+body {
+  font-family: Poppins, sans-serif;
+  background: var(--b);
+  color: var(--t);
+  overflow-x: hidden;
+}
+body:before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 10% 20%, #5b8c5a11, transparent 20%),
+    radial-gradient(circle at 80% 80%, #b8d8ba44, transparent 20%);
+}
+.leaf {
+  position: fixed;
+  width: 30px;
+  opacity: .12;
+  z-index: -1;
+  animation: fall linear infinite;
+}
+.leaf:nth-child(1) { left: 5%; animation-duration: 25s; }
+.leaf:nth-child(2) { left: 85%; animation-duration: 19s; }
+@keyframes fall {
+  from { top: -100px; transform: rotate(0); }
+  to { top: 110vh; transform: rotate(360deg); }
+}
+
+/* Navbar */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffffbb;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #5b8c5a22;
+  z-index: 999;
+  transition: .4s;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo img {
+  width: 58px;
+  animation: logo 4s ease-in-out infinite;
+}
+@keyframes logo { 50% { transform: translateY(-8px); } }
+.logo b { display: block; font-size: 1.1rem; color: var(--v); }
+.logo span { font-size: .85rem; color: #777; }
+.links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+a {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 500;
+  color: var(--t);
+  transition: .35s;
+}
+a:hover, .active {
+  background: var(--v);
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px #5b8c5a33;
+}
+
+/* Hero Section */
+.hero {
+  padding: 170px 30px 40px;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #5b8c5a22;
+  color: var(--v);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+h1 { font-size: 4.5rem; color: var(--v); margin-bottom: 20px; line-height: 1; }
+p { max-width: 800px; margin: auto; line-height: 1.9; color: #666; }
+
+/* Dashboard Layout */
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto 100px;
+  padding: 0 20px;
+}
+.tabs-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 14px 24px;
+  border-radius: 16px;
+  border: none;
+  background: #ffffffb3;
+  color: var(--t);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--s);
+  transition: .3s;
+}
+.tab-btn:hover, .tab-btn.active {
+  background: var(--v);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(91,140,90,0.25);
+}
+
+.tab-content {
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-radius: 35px;
+  padding: 40px;
+  box-shadow: var(--s);
+  border: 6px solid #ffffffaa;
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+.tab-content.active {
+  display: block;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-content h2 {
+  color: var(--v);
+  font-size: 1.8rem;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #5b8c5a22;
+  padding-bottom: 12px;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 24px;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+  color: #555;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: .3s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--v);
+  box-shadow: 0 0 10px rgba(91,140,90,0.1);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.submit-btn {
+  background: var(--v);
+  color: #fff;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: .3s;
+  box-shadow: 0 8px 20px rgba(91,140,90,0.2);
+}
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(91,140,90,0.3);
+}
+
+/* Coordinates Helper Map */
+#helperMap {
+  height: 250px;
+  border-radius: 18px;
+  border: 2px solid #5b8c5a22;
+  margin-bottom: 20px;
+}
+
+/* My Creations List */
+.creations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.creation-item {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #5b8c5a11;
+  transition: .3s;
+}
+.creation-item:hover {
+  border-color: var(--v);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+.creation-info h4 {
+  color: var(--v);
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+.creation-info span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  background: #eee;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #666;
+}
+.delete-btn {
+  background: #d9534f;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: .3s;
+}
+.delete-btn:hover {
+  background: #c9302c;
+  transform: translateY(-2px);
+}
+
+/* API Config Modal */
+.api-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.api-modal-content {
+  background: #F7F2EA;
+  border: 4px solid #ffffffaa;
+  border-radius: 28px;
+  padding: 35px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transform: translateY(30px) scale(0.95);
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-modal.show .api-modal-content {
+  transform: translateY(0) scale(1);
+}
+.api-modal-content h3 {
+  color: #5B8C5A;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.api-modal-content p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.api-modal-content input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #5b8c5a22;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  margin-bottom: 20px;
+  transition: .3s;
+}
+.api-modal-content input:focus {
+  border-color: #5B8C5A;
+  box-shadow: 0 0 10px rgba(91,140,90,0.15);
+}
+.api-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.api-modal-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: .3s;
+  font-size: 0.9rem;
+}
+.api-modal-btn.save {
+  background: #5B8C5A;
+  color: #fff;
+}
+.api-modal-btn.save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+}
+.api-modal-btn.cancel {
+  background: #e0dcd5;
+  color: #555;
+}
+
+footer { padding: 40px; text-align: center; color: #777; }
+
+@media(max-width: 900px) {
+  h1 { font-size: 3rem; }
+  .hero { padding-top: 240px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+}
+@media(max-width: 700px) {
+  nav { padding: 14px; flex-direction: column; gap: 15px; }
+  .links { justify-content: center; }
+  .hero { padding-top: 260px; }
+  .tab-content { padding: 25px; }
+}
+</style>
+</head>
+
+<body>
+
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
+
+<nav>
+<div class="logo">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
+  <div>
+    <b>Mapeamento Cultural</b>
+    <span>Jacareí • IFSP</span>
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/" class="active">Perfil</a>
+  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+
+  <div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+    <span id="apiStatusText">Modo Estático</span>
+  </div>
+</div>
+</nav>
+
+<section class="hero">
+  <div class="badge">🌿 Fortaleça a cena local de Jacareí</div>
+  <h1>Meu Perfil</h1>
+  <p>Cadastre-se como artista, mapeie novos espaços culturais, anuncie eventos e administre suas criações na plataforma.</p>
+</section>
+
+<!-- Dashboard -->
+<section class="dashboard-container">
+  <div class="tabs-header">
+    <button class="tab-btn active" onclick="switchTab('cadastro-agente')">👤 Cadastrar Agente</button>
+    <button class="tab-btn" onclick="switchTab('cadastro-espaco')">🏛️ Cadastrar Espaço</button>
+    <button class="tab-btn" onclick="switchTab('cadastro-evento')">📅 Cadastrar Evento</button>
+    <button class="tab-btn" onclick="switchTab('minhas-criacoes')">🛠️ Administrar</button>
+    <button class="tab-btn" onclick="switchTab('config-api')">🔌 Configurar Conexão</button>
+  </div>
+
+  <!-- CADASTRO AGENTE -->
+  <div class="tab-content active" id="cadastro-agente">
+    <h2>Cadastrar Agente Cultural</h2>
+    <form id="agenteForm" onsubmit="enviarAgente(event)">
+      <div class="form-group">
+        <label>Nome do Artista / Coletivo:</label>
+        <input type="text" id="agNome" placeholder="Ex: Carlos Souza, Grupo Folclórico..." required>
+      </div>
+      <div class="form-group">
+        <label>Área Principal de Atuação:</label>
+        <select id="agArea" required>
+          <option value="">Selecione...</option>
+          <option value="Artesanato">Artesanato</option>
+          <option value="Música">Música</option>
+          <option value="Teatro">Teatro</option>
+          <option value="Artes Visuais">Artes Visuais</option>
+          <option value="Cultura Popular">Cultura Popular</option>
+          <option value="Literatura">Literatura</option>
+          <option value="Dança">Dança</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Biografia / Breve Apresentação:</label>
+        <textarea id="agBio" rows="4" placeholder="Conte um pouco sobre sua trajetória artística e projetos..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>E-mail ou Contato Comercial:</label>
+        <input type="email" id="agContato" placeholder="Ex: contato@artista.com" required>
+      </div>
+      <div class="form-group">
+        <label>URL de Foto/Imagem de Perfil (Opcional):</label>
+        <input type="url" id="agFoto" placeholder="Link de foto online, ex: https://images.unsplash.com/...">
+      </div>
+      <button type="submit" class="submit-btn">Salvar Registro de Agente</button>
+    </form>
+  </div>
+
+  <!-- CADASTRO ESPAÇO -->
+  <div class="tab-content" id="cadastro-espaco">
+    <h2>Cadastrar Espaço Cultural</h2>
+    <form id="espacoForm" onsubmit="enviarEspaco(event)">
+      <div class="form-group">
+        <label>Nome do Espaço Cultural:</label>
+        <input type="text" id="espNome" placeholder="Ex: Ateliê do Vale, Teatro Jacareí..." required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo do Espaço:</label>
+          <select id="espTipo" required>
+            <option value="">Selecione...</option>
+            <option value="Museu">Museu</option>
+            <option value="Teatro">Teatro</option>
+            <option value="Biblioteca">Biblioteca</option>
+            <option value="Centro Cultural">Centro Cultural</option>
+            <option value="Ateliê Coletivo">Ateliê Coletivo</option>
+            <option value="Auditório Público">Auditório Público</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>E-mail / Telefone do Espaço:</label>
+          <input type="text" id="espContato" placeholder="Ex: contato@espaco.org" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Endereço Completo:</label>
+        <input type="text" id="espEndereco" placeholder="Rua, Número, Bairro, Jacareí - SP" required>
+      </div>
+      
+      <!-- Seletor no Mapa -->
+      <div class="form-group">
+        <label>Localização Visual (Clique no mapa de Jacareí para capturar as coordenadas automaticamente):</label>
+        <div id="helperMap"></div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Latitude:</label>
+          <input type="number" step="any" id="espLat" readonly required>
+        </div>
+        <div class="form-group">
+          <label>Longitude:</label>
+          <input type="number" step="any" id="espLng" readonly required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descrição do Espaço (Estrutura, atividades):</label>
+        <textarea id="espDescricao" rows="4" placeholder="Descreva quais oficinas acontecem, a capacidade física do local..." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Mapear Espaço Cultural</button>
+    </form>
+  </div>
+
+  <!-- CADASTRO EVENTO -->
+  <div class="tab-content" id="cadastro-evento">
+    <h2>Cadastrar Evento Cultural</h2>
+    <form id="eventoForm" onsubmit="enviarEvento(event)">
+      <div class="form-group">
+        <label>Título do Evento:</label>
+        <input type="text" id="evTitulo" placeholder="Ex: Sarau Poético de Inverno, Show Acústico..." required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data:</label>
+          <input type="date" id="evData" required>
+        </div>
+        <div class="form-group">
+          <label>Horário:</label>
+          <input type="time" id="evHorario" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Local Físico (Nome do local ou endereço):</label>
+        <input type="text" id="evLocal" placeholder="Ex: Sala Mário Lago, Praça Raul Chaves..." required>
+      </div>
+      <div class="form-group">
+        <label>Nome do Organizador (Agente Responsável):</label>
+        <input type="text" id="evOrganizador" placeholder="Ex: Carlos Souza, Coletivo Teatral..." required>
+      </div>
+      <div class="form-group">
+        <label>Descrição Detalhada do Evento:</label>
+        <textarea id="evDescricao" rows="4" placeholder="Descreva a programação, classificação indicativa, preço (se houver)..." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Agendar Evento Cultural</button>
+    </form>
+  </div>
+
+  <!-- MEUS CADASTROS -->
+  <div class="tab-content" id="minhas-criacoes">
+    <h2>Minhas Criações na Rede</h2>
+    <p style="margin-bottom: 20px;">Estes são os elementos cadastrados sob o seu navegador local. Você pode excluí-los a qualquer momento.</p>
+    <div class="creations-list" id="creationsList">
+      <!-- Gerado dinamicamente -->
+    </div>
+  </div>
+
+  <!-- CONFIGURAÇÃO API -->
+  <div class="tab-content" id="config-api">
+    <h2>Configurações do Servidor API</h2>
+    <p style="margin-bottom:20px;">Configure e verifique o estado do servidor backend Python em SQLite com túnel Cloudflare.</p>
+    <div class="form-group">
+      <label>URL Atual da API (Salva no navegador):</label>
+      <input type="text" id="configApiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    </div>
+    <button class="submit-btn" onclick="salvarConfiguradorAPIManual()">Salvar Configurações & Sincronizar</button>
+  </div>
+</section>
+
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+© 2026 • Plataforma de Mapeamento Cultural • IFSP
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Gerenciador de API
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
+}
+
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado com sucesso! O painel será recarregado.");
+        } else {
+            alert("⚠️ Servidor indisponível. Operando em Modo Estático.");
+        }
+        window.location.reload();
+    });
+}
+
+function salvarConfiguradorAPIManual() {
+    let url = document.getElementById('configApiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Servidor conectado e sincronizado!");
+        } else {
+            alert("⚠️ Servidor não respondeu. Operando offline.");
+        }
+        window.location.reload();
+    });
+}
+
+// LOGICA DE NAVEGAÇÃO ENTRE ABAS
+
+let hMap = null;
+let marker = null;
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    // Ativa botão e tela
+    const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+    if (activeBtn) activeBtn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+    
+    // Inicializar o mapa se a aba for Espaço
+    if (tabId === 'cadastro-espaco') {
+        setTimeout(() => {
+            if (!hMap) {
+                hMap = L.map('helperMap').setView([-23.3053, -45.9658], 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
+                }).addTo(hMap);
+                
+                // Pré-preencher campos coordenadas com centro padrão
+                document.getElementById('espLat').value = -23.3053;
+                document.getElementById('espLng').value = -45.9658;
+                marker = L.marker([-23.3053, -45.9658]).addTo(hMap);
+                
+                // Capturar coordenadas por clique
+                hMap.on('click', (e) => {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    document.getElementById('espLat').value = lat.toFixed(6);
+                    document.getElementById('espLng').value = lng.toFixed(6);
+                    
+                    if (marker) {
+                        marker.setLatLng(e.latlng);
+                    } else {
+                        marker = L.marker(e.latlng).addTo(hMap);
+                    }
+                });
+            } else {
+                hMap.invalidateSize();
+            }
+        }, 100);
+    }
+    
+    if (tabId === 'minhas-criacoes') {
+        carregarMinhasCriacoes();
+    }
+    
+    if (tabId === 'config-api') {
+        APIManager.getApiUrl().then(url => {
+            document.getElementById('configApiUrlInput').value = url;
+        });
+    }
+}
+
+// CADASTROS DE DADOS
+
+async function enviarAgente(e) {
+    e.preventDefault();
+    const payload = {
+        nome: document.getElementById('agNome').value,
+        area: document.getElementById('agArea').value,
+        bio: document.getElementById('agBio').value,
+        contato: document.getElementById('agContato').value,
+        foto: document.getElementById('agFoto').value || "https://picsum.photos/400/400?random=" + Math.random()
+    };
+    
+    const isOnline = await APIManager.checkStatus();
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/agentes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                registrarLocalmente('agente', data.id, payload.nome);
+                alert("✅ Agente cultural cadastrado com sucesso no servidor!");
+                document.getElementById('agenteForm').reset();
+                switchTab('minhas-criacoes');
+            }
+        } catch(err) {
+            alert("❌ Erro ao enviar para o servidor. Cadastrando offline...");
+        }
+    } else {
+        // Salvar localmente
+        const mockId = Date.now();
+        registrarLocalmente('agente', mockId, payload.nome, payload);
+        alert("💾 Servidor Offline: Agente salvo no navegador localmente!");
+        document.getElementById('agenteForm').reset();
+        switchTab('minhas-criacoes');
+    }
+}
+
+async function enviarEspaco(e) {
+    e.preventDefault();
+    const payload = {
+        nome: document.getElementById('espNome').value,
+        tipo: document.getElementById('espTipo').value,
+        endereco: document.getElementById('espEndereco').value,
+        lat: parseFloat(document.getElementById('espLat').value),
+        lng: parseFloat(document.getElementById('espLng').value),
+        descricao: document.getElementById('espDescricao').value,
+        contato: document.getElementById('espContato').value
+    };
+    
+    const isOnline = await APIManager.checkStatus();
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/espacos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                registrarLocalmente('espaco', data.id, payload.nome);
+                alert("✅ Espaço mapeado com sucesso no servidor!");
+                document.getElementById('espacoForm').reset();
+                switchTab('minhas-criacoes');
+            }
+        } catch(err) {
+            alert("❌ Erro ao conectar ao servidor. Mapeando offline...");
+        }
+    } else {
+        const mockId = Date.now();
+        registrarLocalmente('espaco', mockId, payload.nome, payload);
+        alert("💾 Servidor Offline: Espaço mapeado no navegador localmente!");
+        document.getElementById('espacoForm').reset();
+        switchTab('minhas-criacoes');
+    }
+}
+
+async function enviarEvento(e) {
+    e.preventDefault();
+    const payload = {
+        titulo: document.getElementById('evTitulo').value,
+        data: document.getElementById('evData').value,
+        horario: document.getElementById('evHorario').value,
+        local: document.getElementById('evLocal').value,
+        organizador: document.getElementById('evOrganizador').value,
+        descricao: document.getElementById('evDescricao').value
+    };
+    
+    const isOnline = await APIManager.checkStatus();
+    if (isOnline) {
+        try {
+            const apiUrl = await APIManager.getApiUrl();
+            const res = await fetch(`${apiUrl}/api/eventos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                registrarLocalmente('evento', data.id, payload.titulo);
+                alert("✅ Evento agendado com sucesso no servidor!");
+                document.getElementById('eventoForm').reset();
+                switchTab('minhas-criacoes');
+            }
+        } catch(err) {
+            alert("❌ Erro de conexão com servidor. Agendando offline...");
+        }
+    } else {
+        const mockId = Date.now();
+        registrarLocalmente('evento', mockId, payload.titulo, payload);
+        alert("💾 Servidor Offline: Evento agendado no navegador localmente!");
+        document.getElementById('eventoForm').reset();
+        switchTab('minhas-criacoes');
+    }
+}
+
+// AUXILIARES LOCALSTORAGE PARA RASTREAR CRIAÇÕES DO USUÁRIO
+
+function registrarLocalmente(tipo, id, nome, payloadCompleto = null) {
+    let criacoes = JSON.parse(localStorage.getItem('minhas_criacoes') || '[]');
+    criacoes.push({ tipo, id, nome, offline: !!payloadCompleto, payload: payloadCompleto });
+    localStorage.setItem('minhas_criacoes', JSON.stringify(criacoes));
+}
+
+function carregarMinhasCriacoes() {
+    const list = document.getElementById('creationsList');
+    list.innerHTML = "";
+    
+    let criacoes = JSON.parse(localStorage.getItem('minhas_criacoes') || '[]');
+    
+    if (criacoes.length === 0) {
+        list.innerHTML = `<div style="text-align:center;color:#888;font-style:italic;padding:30px;">Você ainda não cadastrou nenhum elemento nesta máquina.</div>`;
+        return;
+    }
+    
+    criacoes.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = "creation-item";
+        
+        card.innerHTML = `
+            <div class="creation-info">
+                <span>${item.tipo}</span>
+                <h4>${item.nome}</h4>
+                <p style="font-size:0.75rem; color:#aaa; margin:0;">
+                    ID: ${item.id} ${item.offline ? '• 💾 Armazenado no Navegador' : '• 🟢 Sincronizado no SQLite'}
+                </p>
+            </div>
+            <button class="delete-btn" onclick="deletarCriacao(${index})">Remover</button>
+        `;
+        list.appendChild(card);
+    });
+}
+
+async function deletarCriacao(index) {
+    let criacoes = JSON.parse(localStorage.getItem('minhas_criacoes') || '[]');
+    const item = criacoes[index];
+    
+    if (!item) return;
+    
+    if (confirm(`Deseja realmente excluir "${item.nome}"?`)) {
+        if (!item.offline) {
+            const isOnline = await APIManager.checkStatus();
+            if (isOnline) {
+                try {
+                    const apiUrl = await APIManager.getApiUrl();
+                    // Definir rota apropriada baseada no tipo
+                    let endpoint = "";
+                    if (item.tipo === 'agente') endpoint = '/api/agentes';
+                    else if (item.tipo === 'espaco') endpoint = '/api/espacos';
+                    else if (item.tipo === 'evento') endpoint = '/api/eventos';
+                    
+                    const res = await fetch(`${apiUrl}${endpoint}?id=${item.id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert("✅ Registro deletado com sucesso do banco de dados relacional!");
+                    }
+                } catch(e) {
+                    alert("⚠️ Falha ao remover do servidor backend, mas retirado do painel local.");
+                }
+            }
+        }
+        
+        // Remove do painel local
+        criacoes.splice(index, 1);
+        localStorage.setItem('minhas_criacoes', JSON.stringify(criacoes));
+        carregarMinhasCriacoes();
+    }
+}
+
+// Inicializações da barra superior
+const n = document.querySelector('nav');
+onscroll = () => {
+    n.style.padding = scrollY > 50 ? '14px 40px' : '18px 40px';
+    n.style.boxShadow = scrollY > 50 ? '0 10px 30px rgba(0,0,0,.08)' : 'none';
+};
+
+// Execução ao carregar
+APIManager.checkStatus();
+</script>
+</body>
+</html>

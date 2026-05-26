@@ -414,10 +414,16 @@ text-align:center
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/">Calendário</a>
+<a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
 <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+
+<div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
+  <span id="apiStatusText">Modo Estático</span>
+</div>
 </div>
 
 </nav>
@@ -561,23 +567,218 @@ Comunidade
 © 2026 • Plataforma de Mapeamento Cultural • IFSP
 </footer>
 
-<script>
-const n=document.querySelector('nav')
+<!-- Modal de Configuração de API (Premium) -->
+<div class="api-modal" id="apiModal">
+  <style>
+    .api-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      z-index: 100000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .api-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .api-modal-content {
+      background: #F7F2EA;
+      border: 4px solid #ffffffaa;
+      border-radius: 28px;
+      padding: 35px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      transform: translateY(30px) scale(0.95);
+      transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .api-modal.show .api-modal-content {
+      transform: translateY(0) scale(1);
+    }
+    .api-modal-content h3 {
+      color: #5B8C5A;
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .api-modal-content p {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .api-modal-content input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 2px solid #5b8c5a22;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #fff;
+      margin-bottom: 20px;
+      transition: .3s;
+    }
+    .api-modal-content input:focus {
+      border-color: #5B8C5A;
+      box-shadow: 0 0 10px rgba(91,140,90,0.15);
+    }
+    .api-modal-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    .api-modal-btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: .3s;
+      font-size: 0.9rem;
+    }
+    .api-modal-btn.save {
+      background: #5B8C5A;
+      color: #fff;
+    }
+    .api-modal-btn.save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(91,140,90,0.3);
+    }
+    .api-modal-btn.cancel {
+      background: #e0dcd5;
+      color: #555;
+    }
+    .api-modal-btn.cancel:hover {
+      background: #d4cfc8;
+    }
+  </style>
+  <div class="api-modal-content">
+    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
+    
+    <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
+    <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
+    
+    <div class="api-modal-btns">
+      <button class="api-modal-btn cancel" onclick="fecharConfiguradorAPI()">Cancelar</button>
+      <button class="api-modal-btn save" onclick="salvarConfiguradorAPI()">Salvar & Testar</button>
+    </div>
+  </div>
+</div>
 
-onscroll=()=>{
-n.style.padding=scrollY>50?'14px 40px':'18px 40px'
-n.style.boxShadow=scrollY>50?'0 10px 30px rgba(0,0,0,.08)':'none'
+<script>
+// Gerenciador de API e Sincronização
+const APIManager = {
+    async getApiUrl() {
+        let savedUrl = localStorage.getItem('cultural_api_url');
+        if (savedUrl) return savedUrl;
+        
+        // Tenta auto-descoberta
+        try {
+            const res = await fetch('../local_api_url.txt');
+            if (res.ok) {
+                const text = await res.text();
+                const url = text.trim();
+                if (url.startsWith('http')) {
+                    localStorage.setItem('cultural_api_url', url);
+                    return url;
+                }
+            }
+        } catch(e) {}
+        
+        return 'http://localhost:8000';
+    },
+
+    async checkStatus() {
+        const apiUrl = await this.getApiUrl();
+        const badge = document.getElementById('apiStatusBadge');
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                badge.style.background = '#5b8c5a22';
+                badge.style.color = '#5b8c5a';
+                dot.style.background = '#5b8c5a';
+                text.innerText = 'API Conectada';
+                return true;
+            }
+        } catch(e) {}
+        
+        badge.style.background = '#e5c15822';
+        badge.style.color = '#c68d1b';
+        dot.style.background = '#c68d1b';
+        text.innerText = 'Modo Estático';
+        return false;
+    }
+};
+
+function abrirConfiguradorAPI() {
+    APIManager.getApiUrl().then(url => {
+        document.getElementById('apiUrlInput').value = url;
+        document.getElementById('apiModal').classList.add('show');
+    });
 }
 
+function fecharConfiguradorAPI() {
+    document.getElementById('apiModal').classList.remove('show');
+}
+
+function salvarConfiguradorAPI() {
+    let url = document.getElementById('apiUrlInput').value.trim();
+    if (url.endsWith('/')) url = url.slice(0, -1); // remove barra no final
+    
+    if (url) {
+        localStorage.setItem('cultural_api_url', url);
+    } else {
+        localStorage.removeItem('cultural_api_url');
+    }
+    
+    fecharConfiguradorAPI();
+    APIManager.checkStatus().then(connected => {
+        if (connected) {
+            alert("✅ Conectado à API com sucesso! A página será recarregada.");
+        } else {
+            alert("⚠️ Servidor não respondeu. A página operará no Modo Estático com dados locais.");
+        }
+        window.location.reload();
+    });
+}
+
+// Inicializações da Página Principal
+const n=document.querySelector('nav');
+onscroll=()=>{
+  n.style.padding=scrollY>50?'14px 40px':'18px 40px';
+  n.style.boxShadow=scrollY>50?'0 10px 30px rgba(0,0,0,.08)':'none';
+};
+
 new IntersectionObserver(e=>e.forEach(i=>
-i.isIntersecting&&i.target.classList.add('show')
-)).observe(document.body)
+  i.isIntersecting&&i.target.classList.add('show')
+)).observe(document.body);
 
 document.querySelectorAll('.card').forEach(c=>
-new IntersectionObserver(e=>e.forEach(i=>
-i.isIntersecting&&i.target.classList.add('show')
-)).observe(c)
-)
+  new IntersectionObserver(e=>e.forEach(i=>
+    i.isIntersecting&&i.target.classList.add('show')
+  )).observe(c)
+);
+
+// Executar verificação da API ao carregar
+APIManager.checkStatus();
 </script>
 
 </body>
