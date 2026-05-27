@@ -620,13 +620,21 @@ const APIManager = {
                 <span style="width: 10px; height: 10px; border-radius: 50%; background: #5b8c5a; display: inline-block; animation: pulseFixed 2s infinite;"></span>
                 <span style="color: #5b8c5a;">🟢 API Conectada</span>
             `;
+            fixedBadge.onclick = abrirConfiguradorAPI;
         } else {
             fixedBadge.style.border = '1px solid rgba(220, 53, 69, 0.3)';
             fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
             fixedBadge.innerHTML = `
                 <span style="width: 10px; height: 10px; border-radius: 50%; background: #dc3545; display: inline-block;"></span>
-                <span style="color: #dc3545;">🔴 Não foi possível conectar à API (Modo Estático)</span>
+                <span style="color: #dc3545;">🔴 API Offline (Clique para Autorizar)</span>
             `;
+            fixedBadge.onclick = () => {
+                if (confirm("Para usar a API gratuita do Pinggy, você precisa autorizar o acesso no seu navegador uma única vez.\n\nDeseja abrir a página de autorização em uma nova aba?\nNa nova aba, clique no botão 'Proceed' ou 'Continue' para liberar o acesso, e depois retorne a este site e recarregue a página.")) {
+                    window.open(apiUrl, '_blank');
+                } else {
+                    abrirConfiguradorAPI();
+                }
+            };
         }
         
         return isOnline;
