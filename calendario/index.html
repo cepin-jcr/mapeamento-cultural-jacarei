@@ -489,16 +489,31 @@ const MOCK_EVENTOS = [
 const APIManager = {
     async getApiUrl() {
         let savedUrl = localStorage.getItem('cultural_api_url');
-        if (savedUrl) return savedUrl;
         
+        // Testa se a URL salva está respondendo, se não, limpa para buscar a nova
+        if (savedUrl) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch(`${savedUrl}/api/test`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) return savedUrl;
+            } catch(e) {}
+            localStorage.removeItem('cultural_api_url');
+        }
+        
+        // Tenta auto-descoberta no diretório atual e no diretório pai
         try {
-            const res = await fetch('../local_api_url.txt');
-            if (res.ok) {
-                const text = await res.text();
-                const url = text.trim();
-                if (url.startsWith('http')) {
-                    localStorage.setItem('cultural_api_url', url);
-                    return url;
+            let paths = ['./local_api_url.txt', '../local_api_url.txt'];
+            for (let path of paths) {
+                const res = await fetch(path);
+                if (res.ok) {
+                    const text = await res.text();
+                    const url = text.trim();
+                    if (url.startsWith('http')) {
+                        localStorage.setItem('cultural_api_url', url);
+                        return url;
+                    }
                 }
             }
         } catch(e) {}
@@ -559,9 +574,9 @@ function salvarConfiguradorAPI() {
     fecharConfiguradorAPI();
     APIManager.checkStatus().then(connected => {
         if (connected) {
-            alert("✅ Conectado à API com sucesso! O calendário será recarregado.");
+            alert("✅ Conectado com sucesso! O calendário será recarregado.");
         } else {
-            alert("⚠️ Servidor não respondeu. Operando em Modo Estático com dados mockados.");
+            alert("⚠️ Servidor indisponível. A lista usará o Modo Estático.");
         }
         window.location.reload();
     });

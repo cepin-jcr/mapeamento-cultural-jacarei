@@ -442,16 +442,31 @@ let pollingInterval = null;
 const APIManager = {
     async getApiUrl() {
         let savedUrl = localStorage.getItem('cultural_api_url');
-        if (savedUrl) return savedUrl;
         
+        // Testa se a URL salva está respondendo, se não, limpa para buscar a nova
+        if (savedUrl) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch(`${savedUrl}/api/test`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) return savedUrl;
+            } catch(e) {}
+            localStorage.removeItem('cultural_api_url');
+        }
+        
+        // Tenta auto-descoberta no diretório atual e no diretório pai
         try {
-            const res = await fetch('../local_api_url.txt');
-            if (res.ok) {
-                const text = await res.text();
-                const url = text.trim();
-                if (url.startsWith('http')) {
-                    localStorage.setItem('cultural_api_url', url);
-                    return url;
+            let paths = ['./local_api_url.txt', '../local_api_url.txt'];
+            for (let path of paths) {
+                const res = await fetch(path);
+                if (res.ok) {
+                    const text = await res.text();
+                    const url = text.trim();
+                    if (url.startsWith('http')) {
+                        localStorage.setItem('cultural_api_url', url);
+                        return url;
+                    }
                 }
             }
         } catch(e) {}
@@ -512,15 +527,15 @@ function salvarConfiguradorAPI() {
     fecharConfiguradorAPI();
     APIManager.checkStatus().then(connected => {
         if (connected) {
-            alert("✅ Conectado com sucesso! Mural sincronizado.");
+            alert("✅ Conectado com sucesso! Mural Sincronizado.");
         } else {
-            alert("⚠️ Servidor indisponível. Operando em Modo Estático offline.");
+            alert("⚠️ Servidor indisponível. Mural operará offline.");
         }
         window.location.reload();
     });
 }
 
-// LÓGICA DO CHAT E MURAL
+// LOGICA DO CHAT E MURAL
 
 // Gera uma cor HSL baseada no hash do nome do remetente (Visual Premium Harmonioso)
 function obterCorPorNome(nome) {
@@ -544,11 +559,9 @@ function obterIniciais(nome) {
 
 function formatarHora(dataStr) {
     if (!dataStr) return "";
-    // O banco SQLite retorna timestamps como YYYY-MM-DD HH:MM:SS ou ISO strings
     try {
         const d = new Date(dataStr.replace(/-/g, '/'));
         if (isNaN(d.getTime())) {
-            // Se falhar o parse nativo, pega o final
             const partes = dataStr.split(' ');
             if (partes.length === 2) return partes[1].slice(0, 5);
             return dataStr;
@@ -574,7 +587,6 @@ async function puxarMensagens() {
             console.error("Erro de polling de mensagens", e);
         }
     } else {
-        // Fallback local do localStorage para manter mensagens enviadas pelo usuário offline
         const locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
         mensagens = [...MOCK_MENSAGENS, ...locais];
     }
@@ -585,7 +597,6 @@ async function puxarMensagens() {
 function desenharMensagens(mensagens) {
     const box = document.getElementById('messagesBox');
     
-    // Evita redesenhar se o número de mensagens for o mesmo e o ID da última não mudar
     if (mensagens.length > 0) {
         const ultima = mensagens[mensagens.length - 1];
         if (ultima.id === ultimaMensagemId) return;
@@ -614,7 +625,6 @@ function desenharMensagens(mensagens) {
         box.appendChild(card);
     });
     
-    // Scroll suave para a última mensagem
     box.scrollTop = box.scrollHeight;
 }
 
@@ -630,7 +640,6 @@ async function enviarMensagem() {
         return;
     }
     
-    // Salva o nome no localStorage para conveniência nas próximas visitas
     localStorage.setItem('chat_sender_name', nome);
     
     const payload = { nome, texto };
@@ -652,7 +661,6 @@ async function enviarMensagem() {
             alert("Erro ao enviar mensagem!");
         }
     } else {
-        // Enviar offline
         let locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
         const agora = new Date();
         const nova = {

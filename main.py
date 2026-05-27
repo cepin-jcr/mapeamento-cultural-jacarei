@@ -349,73 +349,239 @@ def test_port():
 # CLOUDFLARE
 # ==========================================
 
-def start_cloudflare():
+def get_github_token():
+    token_file = "github_token.txt"
+    if os.path.exists(token_file):
+        try:
+            with open(token_file, "r", encoding="utf-8") as f:
+                token = f.read().strip()
+                if token:
+                    return token
+        except:
+            pass
 
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        return token
+
+    print("\n[GITHUB] Token do GitHub não encontrado!")
+    print("Para atualizar a URL automaticamente no repositório GitHub Pages, precisamos do seu Token de Acesso Pessoal (PAT).")
+    token = input("Insira seu token do GitHub (ou aperte Enter para pular): ").strip()
+    if token:
+        try:
+            with open(token_file, "w", encoding="utf-8") as f:
+                f.write(token)
+            if os.path.exists(".gitignore"):
+                with open(".gitignore", "a+", encoding="utf-8") as f:
+                    f.seek(0)
+                    content = f.read()
+                    if token_file not in content:
+                        f.write(f"\n{token_file}\n")
+        except Exception as e:
+            print("[WARN] Não foi possível salvar o token localmente:", e)
+    return token
+
+def update_github_url(url):
+    import urllib.request
+    import base64
+    
+    token = get_github_token()
+    if not token:
+        print("[GITHUB] Atualização automática pulada (sem token).")
+        return
+
+    repo = "cepin-jcr/mapeamento-cultural-jacarei"
+    path = "local_api_url.txt"
+    branch = "main"
+
+    print(f"[GITHUB] Atualizando {path} no repositório {repo}...")
+    api_url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "Python-urllib"
+    }
+
+    sha = None
+    try:
+        req = urllib.request.Request(f"{api_url}?ref={branch}", headers=headers)
+        with urllib.request.urlopen(req) as res:
+            data = json.loads(res.read().decode('utf-8'))
+            sha = data.get("sha")
+    except Exception as e:
+        pass
+
+    body = {
+        "message": f"update api url to {url} [skip ci]",
+        "content": base64.b64encode(url.encode('utf-8')).decode('utf-8'),
+        "branch": branch
+    }
+    if sha:
+        body["sha"] = sha
+
+    try:
+        req = urllib.request.Request(
+            api_url,
+            data=json.dumps(body).encode('utf-8'),
+            headers=headers,
+            method="PUT"
+        )
+        with urllib.request.urlopen(req) as res:
+            if res.status in (200, 201):
+                print("\n================================")
+                print("[GITHUB SUCCESS] URL da API atualizada com sucesso no GitHub Pages!")
+                print(f"Nova URL: {url}")
+                print("================================\n")
+            else:
+                print(f"[GITHUB ERROR] Falha ao atualizar. Status: {res.status}")
+    except Exception as e:
+         print(f"[GITHUB ERROR] Erro na requisição API: {e}")
+
+def start_tunnel():
     print("\n================================")
-    print("[CLOUDFLARE]")
+    print("[INICIANDO TÚNEL DE CONEXÃO]")
     print("================================")
 
-    cmd = [
+    cmd_cf = [
         "cloudflared",
         "tunnel",
         "--url",
-        f"http://localhost:{PORT}",
+        f"http://127.0.0.1:{PORT}",
         "--protocol",
         "http2",
         "--loglevel",
         "debug"
     ]
 
-    print(f"[CMD] {' '.join(cmd)}")
+    if os.path.exists("cloudflared.exe"):
+        cmd_cf[0] = "./cloudflared.exe"
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        bufsize=1
-    )
+    print(f"[CF] Tentando iniciar Cloudflare Tunnel: {' '.join(cmd_cf)}")
 
-    while True:
+    cf_failed = False
+    process_cf = None
+    try:
+        process_cf = subprocess.Popen(
+            cmd_cf,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1
+        )
+    except FileNotFoundError:
+        print("[CF] Executável cloudflared não encontrado. Usando Pinggy como fallback...")
+        cf_failed = True
 
-        line = process.stdout.readline()
-
-        if not line:
-
-            if process.poll() is not None:
-
-                print("[CLOUDFLARE EXIT]")
-
+    url = None
+    if not cf_failed and process_cf:
+        start_time = time.time()
+        while time.time() - start_time < 15:
+            if process_cf.poll() is not None:
+                cf_failed = True
                 break
 
-            continue
+            try:
+                line = process_cf.stdout.readline()
+                if not line:
+                    continue
+                line = line.strip()
+                print(f"[CF] {line}")
 
-        line = line.strip()
+                if "Environment has critical failures" in line or "timeout" in line or "failed to dial" in line:
+                    print("[CF] Falha de conexão detectada (provavelmente bloqueio de firewall na porta 7844).")
+                    cf_failed = True
+                    break
 
-        print(f"[CF] {line}")
+                if "trycloudflare.com" in line:
+                    match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+                    if match:
+                        url = match.group(0)
+                        break
+            except Exception:
+                pass
 
-        if "trycloudflare.com" in line:
+        if cf_failed or not url:
+            print("[CF] Cloudflare falhou ou demorou para conectar. Finalizando processo do Cloudflare...")
+            try:
+                process_cf.terminate()
+                process_cf.wait(timeout=2)
+            except:
+                pass
+            cf_failed = True
 
-            match = re.search(
-                r'https://[a-zA-Z0-9-]+\.trycloudflare\.com',
-                line
+    if cf_failed or not url:
+        print("\n[PINGGY] Iniciando túnel SSH alternativo sobre HTTPS (Porta 443)...")
+        cmd_pinggy = [
+            "ssh",
+            "-T",
+            "-p",
+            "443",
+            "-o",
+            "StrictHostKeyChecking=no",
+            "-R",
+            f"80:127.0.0.1:{PORT}",
+            "a.pinggy.io"
+        ]
+
+        print(f"[PINGGY] Executando: {' '.join(cmd_pinggy)}")
+        try:
+            process_pinggy = subprocess.Popen(
+                cmd_pinggy,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                bufsize=1
             )
+        except Exception as e:
+            print(f"[PINGGY ERROR] Falha ao iniciar SSH cliente: {e}")
+            return
 
-            if match:
+        start_time = time.time()
+        while time.time() - start_time < 15:
+            if process_pinggy.poll() is not None:
+                print("[PINGGY EXIT] Processo SSH encerrado.")
+                break
 
-                url = match.group(0)
+            line = process_pinggy.stdout.readline()
+            if not line:
+                continue
+            line = line.strip()
+            print(f"[PINGGY] {line}")
 
-                print("\n================================")
-                print("[TUNNEL ONLINE]")
-                print(f"URL = {url}")
-                print("================================")
+            if "pinggy-free.link" in line:
+                match = re.search(r'https://[a-zA-Z0-9-]+\.run\.pinggy-free\.link', line)
+                if match:
+                    url = match.group(0)
+                    break
 
-                print("\nTESTE:")
-                print(url)
-                print(url + "/api/test")
-                print(url + "/api/agentes")
+        def keep_reading(proc):
+            while proc.poll() is None:
+                try:
+                    proc.stdout.readline()
+                except:
+                    break
+
+        threading.Thread(target=keep_reading, args=(process_pinggy,), daemon=True).start()
+
+    if url:
+        print("\n================================")
+        print("[TÚNEL ESTABELECIDO]")
+        print(f"URL PÚBLICA = {url}")
+        print("================================")
+
+        try:
+            update_github_url(url)
+        except Exception as e:
+            print(f"[GITHUB ERROR] Falha ao atualizar URL: {e}")
+
+        while True:
+            time.sleep(3600)
+    else:
+        print("\n[ERRO] Não foi possível estabelecer nenhum túnel de conexão.")
 
 # ==========================================
 # MAIN
@@ -444,7 +610,7 @@ if __name__ == "__main__":
 
     try:
 
-        start_cloudflare()
+        start_tunnel()
 
     except KeyboardInterrupt:
 
