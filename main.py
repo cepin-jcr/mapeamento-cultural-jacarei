@@ -501,8 +501,22 @@ def start_tunnel():
                 if "trycloudflare.com" in line:
                     match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
                     if match:
-                        url = match.group(0)
-                        break
+                        temp_url = match.group(0)
+                        print(f"[CF] URL gerada: {temp_url}. Verificando se o túnel está ativo...")
+                        # Espera 5 segundos para o túnel conectar
+                        time.sleep(5)
+                        import urllib.request
+                        try:
+                            req = urllib.request.Request(f"{temp_url}/api/test", headers={"User-Agent": "Python"})
+                            with urllib.request.urlopen(req, timeout=5) as res:
+                                if res.status == 200:
+                                    url = temp_url
+                                    print("[CF] Túnel Cloudflare verificado com sucesso!")
+                                    break
+                        except Exception as e:
+                            print(f"[CF] Falha na verificação do túnel Cloudflare (provavelmente bloqueio de firewall): {e}")
+                            cf_failed = True
+                            break
             except Exception:
                 pass
 
