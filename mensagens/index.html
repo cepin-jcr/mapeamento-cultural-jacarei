@@ -352,6 +352,37 @@ footer { padding: 40px; text-align: center; color: #777; }
   .input-row { flex-direction: column; }
   .name-input { width: 100%; }
 }
+
+   /* Custom API Styles */
+   .api-source-badge {
+       position: absolute;
+       top: 14px;
+       left: 14px;
+       padding: 6px 12px;
+       border-radius: 20px;
+       font-size: 0.72rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 0.5px;
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+       z-index: 10;
+       font-family: 'Poppins', sans-serif;
+   }
+   .api-source-badge.online {
+       background: #5b8c5a !important;
+       color: #ffffff !important;
+       border: 1px solid rgba(255, 255, 255, 0.2);
+   }
+   .api-source-badge.offline {
+       background: #e5c158 !important;
+       color: #3b3b3b !important;
+       border: 1px solid rgba(255, 255, 255, 0.2);
+   }
+   @keyframes pulseFixed {
+       0% { box-shadow: 0 0 0 0 rgba(91, 140, 90, 0.4); }
+       70% { box-shadow: 0 0 0 6px rgba(91, 140, 90, 0); }
+       100% { box-shadow: 0 0 0 0 rgba(91, 140, 90, 0); }
+   }
 </style>
 </head>
 
@@ -426,6 +457,8 @@ footer { padding: 40px; text-align: center; color: #777; }
 </footer>
 
 <script>
+let isApiOnline = false;
+
 // Mock de Mensagens para Fallback
 const MOCK_MENSAGENS = [
     {id: 1, nome: "Sistema", texto: "Olá a todos! Sejam muito bem-vindos ao Mural Cultural da comunidade de Jacareí! 🌿 Use este espaço para postar recados, fechar parcerias artísticas, convidar para saraus ou compartilhar contatos!", data_envio: "2026-05-26 15:00:00"},
@@ -474,32 +507,94 @@ const APIManager = {
         return 'http://localhost:8000';
     },
 
-    async checkStatus() {
+        async checkStatus() {
         const apiUrl = await this.getApiUrl();
         const badge = document.getElementById('apiStatusBadge');
         const dot = document.getElementById('apiStatusDot');
         const text = document.getElementById('apiStatusText');
         
+        let isOnline = false;
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);
-            const res = await fetch(`${apiUrl}/api/agentes`, { signal: controller.signal });
+            const res = await fetch(`${apiUrl}/api/test`, { signal: controller.signal });
             clearTimeout(timeoutId);
-            
-            if (res.ok) {
+            if (res.ok) isOnline = true;
+        } catch(e) {}
+        
+        // Atualiza o badge superior se ele existir na página
+        if (badge && dot && text) {
+            if (isOnline) {
                 badge.style.background = '#5b8c5a22';
                 badge.style.color = '#5b8c5a';
                 dot.style.background = '#5b8c5a';
                 text.innerText = 'API Conectada';
-                return true;
+            } else {
+                badge.style.background = '#e5c15822';
+                badge.style.color = '#c68d1b';
+                dot.style.background = '#c68d1b';
+                text.innerText = 'Modo Estático';
             }
-        } catch(e) {}
+        }
         
-        badge.style.background = '#e5c15822';
-        badge.style.color = '#c68d1b';
-        dot.style.background = '#c68d1b';
-        text.innerText = 'Modo Estático';
-        return false;
+        // Atualiza a variável global de controle de status se ela existir
+        if (typeof isApiOnline !== 'undefined') {
+            isApiOnline = isOnline;
+        }
+        
+        // Injeta/Atualiza o indicador flutuante fixado no canto inferior direito
+        let fixedBadge = document.getElementById('fixedApiStatus');
+        if (!fixedBadge) {
+            fixedBadge = document.createElement('div');
+            fixedBadge.id = 'fixedApiStatus';
+            fixedBadge.onclick = abrirConfiguradorAPI;
+            fixedBadge.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 99999;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 30px;
+                padding: 10px 18px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+                font-size: 0.82rem;
+                font-weight: 700;
+                font-family: 'Poppins', sans-serif;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            `;
+            fixedBadge.onmouseover = () => {
+                fixedBadge.style.transform = 'translateY(-4px) scale(1.03)';
+                fixedBadge.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.18)';
+            };
+            fixedBadge.onmouseout = () => {
+                fixedBadge.style.transform = 'none';
+                fixedBadge.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.12)';
+            };
+            document.body.appendChild(fixedBadge);
+        }
+        
+        if (isOnline) {
+            fixedBadge.style.border = '1px solid rgba(91, 140, 90, 0.3)';
+            fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
+            fixedBadge.innerHTML = `
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #5b8c5a; display: inline-block; animation: pulseFixed 2s infinite;"></span>
+                <span style="color: #5b8c5a;">🟢 API Conectada</span>
+            `;
+        } else {
+            fixedBadge.style.border = '1px solid rgba(220, 53, 69, 0.3)';
+            fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
+            fixedBadge.innerHTML = `
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #dc3545; display: inline-block;"></span>
+                <span style="color: #dc3545;">🔴 Não foi possível conectar à API (Modo Estático)</span>
+            `;
+        }
+        
+        return isOnline;
     }
 };
 
@@ -527,15 +622,15 @@ function salvarConfiguradorAPI() {
     fecharConfiguradorAPI();
     APIManager.checkStatus().then(connected => {
         if (connected) {
-            alert("✅ Conectado com sucesso! Mural Sincronizado.");
+            alert("✅ Conectado com sucesso! Mural sincronizado.");
         } else {
-            alert("⚠️ Servidor indisponível. Mural operará offline.");
+            alert("⚠️ Servidor indisponível. Operando em Modo Estático offline.");
         }
         window.location.reload();
     });
 }
 
-// LOGICA DO CHAT E MURAL
+// LÓGICA DO CHAT E MURAL
 
 // Gera uma cor HSL baseada no hash do nome do remetente (Visual Premium Harmonioso)
 function obterCorPorNome(nome) {
@@ -559,9 +654,11 @@ function obterIniciais(nome) {
 
 function formatarHora(dataStr) {
     if (!dataStr) return "";
+    // O banco SQLite retorna timestamps como YYYY-MM-DD HH:MM:SS ou ISO strings
     try {
         const d = new Date(dataStr.replace(/-/g, '/'));
         if (isNaN(d.getTime())) {
+            // Se falhar o parse nativo, pega o final
             const partes = dataStr.split(' ');
             if (partes.length === 2) return partes[1].slice(0, 5);
             return dataStr;
@@ -587,6 +684,7 @@ async function puxarMensagens() {
             console.error("Erro de polling de mensagens", e);
         }
     } else {
+        // Fallback local do localStorage para manter mensagens enviadas pelo usuário offline
         const locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
         mensagens = [...MOCK_MENSAGENS, ...locais];
     }
@@ -597,6 +695,7 @@ async function puxarMensagens() {
 function desenharMensagens(mensagens) {
     const box = document.getElementById('messagesBox');
     
+    // Evita redesenhar se o número de mensagens for o mesmo e o ID da última não mudar
     if (mensagens.length > 0) {
         const ultima = mensagens[mensagens.length - 1];
         if (ultima.id === ultimaMensagemId) return;
@@ -612,12 +711,16 @@ function desenharMensagens(mensagens) {
         const iniciais = obterIniciais(msg.nome);
         const cor = obterCorPorNome(msg.nome);
         
+        const badgeHtml = isApiOnline ? '<span class="api-source-badge online" style="position:static; margin-left:8px; padding:2px 8px; font-size:0.6rem; display:inline-block; box-shadow:none;">⚡ API Real</span>' : '<span class="api-source-badge offline" style="position:static; margin-left:8px; padding:2px 8px; font-size:0.6rem; display:inline-block; box-shadow:none;">🔌 Dados locais (Mock)</span>';
         card.innerHTML = `
             <div class="message-avatar" style="background: ${cor}">${iniciais}</div>
             <div class="message-bubble">
                 <div class="message-header">
                     <span class="message-sender" style="color: ${cor}">${msg.nome}</span>
-                    <span class="message-time">⏰ ${formatarHora(msg.data_envio)}</span>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        ${badgeHtml}
+                        <span class="message-time">⏰ ${formatarHora(msg.data_envio)}</span>
+                    </div>
                 </div>
                 <div class="message-text">${msg.texto}</div>
             </div>
@@ -625,6 +728,7 @@ function desenharMensagens(mensagens) {
         box.appendChild(card);
     });
     
+    // Scroll suave para a última mensagem
     box.scrollTop = box.scrollHeight;
 }
 
@@ -640,6 +744,7 @@ async function enviarMensagem() {
         return;
     }
     
+    // Salva o nome no localStorage para conveniência nas próximas visitas
     localStorage.setItem('chat_sender_name', nome);
     
     const payload = { nome, texto };
@@ -661,6 +766,7 @@ async function enviarMensagem() {
             alert("Erro ao enviar mensagem!");
         }
     } else {
+        // Enviar offline
         let locais = JSON.parse(localStorage.getItem('chat_mensagens_offline') || '[]');
         const agora = new Date();
         const nova = {
