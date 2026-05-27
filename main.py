@@ -364,6 +364,10 @@ def get_github_token():
     if token:
         return token
 
+    if not sys.stdin.isatty():
+        print("[GITHUB] Executando em modo não-interativo. Pulando prompt do token.")
+        return None
+
     print("\n[GITHUB] Token do GitHub não encontrado!")
     print("Para atualizar a URL automaticamente no repositório GitHub Pages, precisamos do seu Token de Acesso Pessoal (PAT).")
     token = input("Insira seu token do GitHub (ou aperte Enter para pular): ").strip()
@@ -572,6 +576,14 @@ def start_tunnel():
         print("[TÚNEL ESTABELECIDO]")
         print(f"URL PÚBLICA = {url}")
         print("================================")
+
+        # Escreve a URL no arquivo local para que a pasta local esteja conectada
+        try:
+            with open("local_api_url.txt", "w", encoding="utf-8") as f:
+                f.write(url)
+            print(f"[LOCAL SUCCESS] URL salva em local_api_url.txt: {url}")
+        except Exception as e:
+            print(f"[LOCAL ERROR] Falha ao salvar URL localmente: {e}")
 
         try:
             update_github_url(url)
