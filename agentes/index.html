@@ -500,7 +500,7 @@ const APIManager = {
         
         // Tenta auto-descoberta no diretório atual e no diretório pai
         try {
-            let paths = ['./local_api_url.txt', '../local_api_url.txt'];
+            let paths = ['./local_api_url.txt', '../local_api_url.txt', '/mapeamento-cultural-jacarei/local_api_url.txt', '/local_api_url.txt'];
             for (let path of paths) {
                 const res = await fetch(path);
                 if (res.ok) {
@@ -601,15 +601,9 @@ const APIManager = {
             fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
             fixedBadge.innerHTML = `
                 <span style="width: 10px; height: 10px; border-radius: 50%; background: #dc3545; display: inline-block;"></span>
-                <span style="color: #dc3545;">🔴 API Offline (Clique para Autorizar)</span>
+                <span style="color: #dc3545;">🔴 API Desconectada (Modo Estático)</span>
             `;
-            fixedBadge.onclick = () => {
-                if (confirm("Para usar a API gratuita do Pinggy, você precisa autorizar o acesso no seu navegador uma única vez.\n\nDeseja abrir a página de autorização em uma nova aba?\nNa nova aba, clique no botão 'Proceed' ou 'Continue' para liberar o acesso, e depois retorne a este site e recarregue a página.")) {
-                    window.open(apiUrl, '_blank');
-                } else {
-                    abrirConfiguradorAPI();
-                }
-            };
+            fixedBadge.onclick = abrirConfiguradorAPI;
         }
         
         return isOnline;
