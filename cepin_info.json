@@ -1,0 +1,138 @@
+{
+    "apresentacao": {
+        "titulo": "Quem Somos: CEPIN Campus Jacareí",
+        "subtitulo": "O Centro de Pesquisa e Inovação em Consumo, Mercados e Negócios de Jacareí (CEPIN JCR)",
+        "texto1": "A criação Centro de Pesquisa e Inovação em Consumo, Mercados e Negócios do câmpus de Jacareí (CEPIN-JCR) configura a importância da pesquisa e saber científico no ambiente do IFSP, possibilitando o envolvimento ao longo do tempo de pesquisadores, estudantes, técnicos administrativos e parceiros, no sentido de desenvolver trabalhos que atendam aos anseios e demandas da sociedade.",
+        "texto2": "O centro visa dar condições aos professores e alunos de se dedicarem à pesquisa e construírem núcleos que possam gerar formação profissional qualificada (atualmente, cursos técnicos e de graduação e, futuramente, cursos de mestrado e doutorado profissional) e desenvolvimento de linhas de pesquisa alinhadas às necessidades da sociedade, das empresas públicas, privadas e movimentos populares e sociais organizados, no sentido de lidar adequadamente com o ambiente complexo que caracteriza a sociedade atual.",
+        "texto3": "O CEPIN JCR tem como finalidade desenvolver investigação fundamental ou aplicada, de transferência de tecnologia; e oferecer atividades de extensão voltadas para o público em geral. O Centro possui as seguintes linhas de pesquisa: Comportamento do Consumidor e Consumo; Mercados, Sociedade e Organizações, e Marketing digital e Inovação.",
+        "texto4": "Atuamos como agentes de transformação, unindo rigor científico à prática extensionista em três frentes estratégicas: Diagnóstico e Políticas Públicas, Redes e Memória (incluindo divulgação científica) e Formação e Capacitação."
+    },
+    "competencias": [
+        "Propor, acompanhar e estimular projetos de pesquisa e inovação em parceria com instituições públicas ou privadas, tornando o IFSP uma referência na área proposta.",
+        "Difundir as pesquisas realizadas pelo CEPIN no IFSP, estendendo seus benefícios à comunidade.",
+        "Estimular a aproximação de grupos de pesquisa do IFSP com outros grupos de pesquisa e outras Instituições de Ensino e de Ciência e Tecnologia",
+        "Estimular a submissão de propostas aos editais da FAPESP de fomento aos CEPIDs.",
+        "Dar condições aos professores de se dedicarem à pesquisa e construir núcleos que possam gerar formação profissional qualificada (atualmente, cursos técnicos e de graduação e, futuramente, cursos de mestrado e doutorado profissional)",
+        "Dar condições aos professores de se dedicarem ao desenvolvimento de linhas de pesquisa alinhadas às necessidades da sociedade, das empresas públicas, privadas e movimentos populares e sociais organizados, no sentido de lidar adequadamente com o ambiente complexo que caracteriza a sociedade atual.",
+        "Despertar a vocação científica e tecnológica dos alunos, de forma a estimular e desenvolver o pensamento científico, a capacidade criativa, o espírito crítico e a procura de novas respostas e soluções inovadoras, e conscientizar o aluno das questões sociais e éticas inerentes à pesquisa científica e tecnológica.",
+        "Realizar as pesquisas agrupadas nas seguintes linhas: (1) Comportamento do Consumidor e Consumo; (2) Mercados, Sociedade e Organizações, (3) Marketing digital e Inovação.",
+        "Buscar potenciais parceiros, em organizações privadas de diversos tipos de tamanho, nacionais ou multinacionais, do setor primário, secundário, ou terciário da economia. Empresários e profissionais autônomos. Movimentos sociais, populares e culturais. Organizações públicas, prefeituras, governos, agências e bancos de fomento e entidades do terceiro setor."
+    ],
+    "parceiros": {
+        "titulo": "POTENCIAIS PARCEIROS",
+        "texto": "O CEPIN-JCR tem buscado organizações privadas de diversos tipos de tamanho, nacionais ou multinacionais, do setor primário, secundário, ou terciário da economia. Empresários e profissionais autônomos. Movimentos sociais, populares e culturais. Organizações públicas, prefeituras, governos, agências e bancos de fomento e entidades do terceiro setor."
+    },
+    "localizacao_contato": {
+        "titulo": "LOCALIZAÇÃO E CONTATO",
+        "endereco": "R. Antônio Fogaça de Almeida, 200 - Jardim América, Jacareí - SP, 12322-030 Sala 116 – CEPIN JCR",
+        "email": "cepinjcr@gmail.com"
+    },
+    "projetos": [
+        {
+            "titulo": "EnCEPIN 2022",
+            "descricao": "O primeiro Encontro Acadêmico do Centro de Pesquisa e Inovação em Consumo, Mercados e Negócios do IFSP Jacareí - EnCEPIN 2022, será realizado em formato on-line, no dia 26 de novembro de 2022. O evento será GRATUITO e aberto à participação de estudantes, professores, pesquisadores, profissionais de mercado e pessoas interessadas, tendo como temas Consumo, Mercados, Negócios e áreas afins.",
+            "link": "https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN"
+        }
+    ],
+    "outros_trabalhos": {
+        "titulo": "Conheça Outros Trabalhos",
+        "texto": "O CEPIN-JCR mantém um portfólio diversificado de projetos que articulam teoria e prática. Convidamos você a conhecer mais sobre nossas ações:",
+        "itens": [
+            {
+                "titulo": "Ampliando a Nossa Voz",
+                "link": "https://www.instagram.com/ampliandonossavoz?igsh=MTM3a2g0MGUyZzB6NA==",
+                "detalhes": "Instagram"
+            },
+            {
+                "titulo": "Podcast de Marketing",
+                "link": "https://open.spotify.com/show/0v92ASpoi0VvNqHtegiQRG?si=lBezlopeTcifB7m5yFUFCA&nd=1&dlsi=cbd7049964a54367",
+                "detalhes": "Spotify"
+            },
+            {
+                "titulo": "Mapeamento Territorial da Cultura (Zenodo)",
+                "link": "https://doi.org/10.5281/zenodo.20562928",
+                "detalhes": "Zenodo"
+            },
+            {
+                "titulo": "Protótipo de Mapeamento Cultural",
+                "link": "https://pwa.app.vc/mapa_cultural",
+                "detalhes": "PWA/Plataforma"
+            }
+        ]
+    },
+    "resultados": {
+        "titulo": "RESULTADOS",
+        "texto": "Acesse AQUI o resumo do I Diagnóstico Mercado Cultural de Jacareí.",
+        "link": "https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN"
+    },
+    "redes_sociais": {
+        "instagram": "@cepinjcr",
+        "facebook": "Cepin Jcr",
+        "youtube": "CEPIN JCR"
+    },
+    "equipe": {
+        "titulo": "EQUIPE (CEPIN-JCR)",
+        "texto": "O Cepin do IFSP Campus Jacareí é composto atualmente por 8 pesquisadores, uma estagiária e uma bolsista, ambas alunas do curso de bacharelado em Administração.",
+        "coordenacao": "Simone Lisboa",
+        "membros": [
+            {
+                "nome": "Ronan Quintão",
+                "campus": "IFSP Jacareí",
+                "cargo": "Professor / Pesquisador",
+                "contato": "ronan.torres@ifsp.edu.br"
+            },
+            {
+                "nome": "Simone Lisboa",
+                "campus": "IFSP Jacareí",
+                "cargo": "Professora / Coordenadora",
+                "contato": "simone.lisboa@ifsp.edu.br"
+            },
+            {
+                "nome": "Tardelli Stekel",
+                "campus": "IFSP Jacareí",
+                "cargo": "Professor / Pesquisador",
+                "contato": "stekel@ifsp.edu.br"
+            },
+            {
+                "nome": "Denise Barros",
+                "campus": "IFSP Jacareí",
+                "cargo": "Professora / Pesquisadora",
+                "contato": "barros.denise@ifsp.edu.br"
+            },
+            {
+                "nome": "Aristides dos Santos",
+                "campus": "IFSP Cubatão",
+                "cargo": "Professor / Pesquisador",
+                "contato": "aristidesfaria@ifsp.edu.br"
+            },
+            {
+                "nome": "Marlette Ferreira",
+                "campus": "IFSP Garaguatatuba",
+                "cargo": "Professora / Pesquisadora",
+                "contato": "marlette@ifsp.edu.br"
+            },
+            {
+                "nome": "Willian Feitosa",
+                "campus": "IFSP Pirituba",
+                "cargo": "Professor / Pesquisador",
+                "contato": "wilian.feitosa@ifsp.edu.br"
+            }
+        ],
+        "desenvolvedores": [
+            {
+                "nome": "Desenvolvedor Exemplo 1",
+                "campus": "IFSP Jacareí",
+                "cargo": "Desenvolvimento Front-end",
+                "contato": "dev1@ifsp.edu.br"
+            }
+        ],
+        "colaboradores": [
+            {
+                "nome": "Colaborador Exemplo 1",
+                "campus": "IFSP Jacareí",
+                "cargo": "Estagiária / Apoio Técnico",
+                "contato": "colab1@ifsp.edu.br"
+            }
+        ]
+    }
+}

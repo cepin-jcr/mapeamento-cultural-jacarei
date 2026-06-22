@@ -433,14 +433,14 @@ footer { padding: 40px; text-align: center; color: #777; }
 </div>
 
 <div class="links">
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/">Home</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mapa/">Mapa</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/calendario/" class="active">Calendário</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/eventos/">Eventos</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/espacos/">Espaços</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/agentes/">Agentes</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/perfil/">Perfil</a>
-  <a href="https://cepin-jcr.github.io/mapeamento-cultural-jacarei/mensagens/">Mensagens</a>
+  <a href="../index.html">Home</a>
+  <a href="../mapa/index.html">Mapa</a>
+  <a href="../calendario/index.html" class="active">Calendário</a>
+  <a href="../eventos/index.html">Eventos</a>
+  <a href="../espacos/index.html">Espaços</a>
+  <a href="../agentes/index.html">Agentes</a>
+  <a href="../perfil/index.html">Perfil</a>
+  <a href="../mensagens/index.html">Mensagens</a>
 
   <div class="api-status-badge" id="apiStatusBadge" onclick="abrirConfiguradorAPI()" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;background:#e5c15822;color:#c68d1b;padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.3s;">
     <span style="width:8px;height:8px;border-radius:50%;background:#c68d1b;display:inline-block;" id="apiStatusDot"></span>
@@ -502,8 +502,150 @@ footer { padding: 40px; text-align: center; color: #777; }
   </div>
 </div>
 
-<footer>
-© 2026 • Plataforma de Mapeamento Cultural • IFSP
+<style>
+.cute-footer {
+  background: #ffffffb3;
+  backdrop-filter: blur(12px);
+  border-top: 2px solid #5b8c5a22;
+  padding: 60px 40px 20px;
+  color: var(--t);
+  margin-top: 60px;
+  border-radius: 40px 40px 0 0;
+  box-shadow: 0 -10px 40px rgba(91,140,90,.05);
+}
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr 2fr;
+  gap: 40px;
+  text-align: left;
+}
+.footer-column h3 {
+  color: var(--v);
+  font-size: 1.15rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+.footer-column p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #666;
+  margin-bottom: 12px;
+}
+.footer-column a {
+  padding: 0;
+  border-radius: 0;
+  color: var(--v);
+  font-weight: 600;
+  display: inline;
+}
+.footer-column a:hover {
+  background: transparent;
+  color: var(--v);
+  text-decoration: underline;
+  transform: none;
+  box-shadow: none;
+}
+.footer-socials {
+  list-style: none;
+}
+.footer-socials li {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+.footer-socials a {
+  color: #666;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.footer-socials a:hover {
+  color: var(--v);
+  text-decoration: none;
+}
+.cepin-btn-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-cepin {
+  background: var(--v);
+  color: #fff !important;
+  font-size: 1.1rem;
+  padding: 16px 28px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 25px rgba(91,140,90,.3);
+  text-align: center;
+  width: 100%;
+  display: block !important;
+  font-weight: 700 !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+.btn-cepin:hover {
+  background: var(--v) !important;
+  color: #fff !important;
+  transform: translateY(-5px) scale(1.02) !important;
+  box-shadow: 0 15px 30px rgba(91,140,90,.45) !important;
+}
+.footer-bottom {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid #5b8c5a11;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888;
+}
+@media (max-width: 900px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+}
+@media (max-width: 600px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+  .cepin-btn-column {
+    justify-content: center;
+  }
+  .btn-cepin {
+    width: 80%;
+  }
+}
+</style>
+
+<footer class="cute-footer">
+  <div class="footer-container">
+    <div class="footer-column info-column">
+      <h3>📍 Localização e Contato</h3>
+      <p><strong>Endereço:</strong> R. Antônio Fogaça de Almeida, 200 - Jardim América, Jacareí - SP, 12322-030 Sala 116 – CEPIN JCR</p>
+      <p><strong>Contato:</strong> Email: <a href="mailto:cepinjcr@gmail.com">cepinjcr@gmail.com</a></p>
+    </div>
+    
+    <div class="footer-column results-column">
+      <h3>📊 Resultados</h3>
+      <p>Acesse <a href="https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN" target="_blank">AQUI</a> o resumo do I Diagnóstico Mercado Cultural de Jacareí.</p>
+    </div>
+    
+    <div class="footer-column social-column">
+      <h3>📱 Redes Sociais</h3>
+      <ul class="footer-socials">
+        <li><a href="https://instagram.com/cepinjcr" target="_blank">📸 Instagram: @cepinjcr</a></li>
+        <li><a href="https://facebook.com" target="_blank">👥 Facebook: Cepin Jcr</a></li>
+        <li><a href="https://youtube.com" target="_blank">🎥 YouTube: CEPIN JCR</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-column cepin-btn-column">
+      <a href="../cepin/index.html" class="btn btn-cepin">🌿 Conheça o CEPIN</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 • Plataforma de Mapeamento Cultural • IFSP</p>
+  </div>
 </footer>
 
 <script>
@@ -824,6 +966,23 @@ onscroll = () => {
 APIManager.checkStatus().then(() => {
     renderCalendar();
 });
+
+// Diagnostic code to check footer status in console
+console.log("=== DIAGNÓSTICO DO RODAPÉ ===");
+const debugFooter = document.querySelector('.cute-footer');
+if (debugFooter) {
+    console.log("✔ Elemento do rodapé encontrado no DOM.");
+    const debugStyle = window.getComputedStyle(debugFooter);
+    console.log("Display:", debugStyle.display);
+    console.log("Visibility:", debugStyle.visibility);
+    console.log("Opacity:", debugStyle.opacity);
+    console.log("Height (offsetHeight):", debugFooter.offsetHeight, "px");
+    if (debugFooter.offsetHeight === 0) {
+        console.warn("Atenção: O rodapé tem altura 0! Pode estar ocultado por layout.");
+    }
+} else {
+    console.error("✘ Elemento do rodapé NÃO encontrado no DOM! A página pode estar desatualizada (cache).");
+}
 </script>
 </body>
 </html>

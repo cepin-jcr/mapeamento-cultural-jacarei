@@ -268,6 +268,18 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
 
                 return self.respond_json(data)
 
+            if path == "/api/cepin":
+                cepin_file = "cepin_info.json"
+                if os.path.exists(cepin_file):
+                    try:
+                        with open(cepin_file, "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                        return self.respond_json(data)
+                    except Exception as e:
+                        return self.respond_json({"error": str(e)}, 500)
+                else:
+                    return self.respond_json({"error": "not found"}, 404)
+
             # -----------------------------
 
             return self.respond_json({
@@ -282,6 +294,71 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
             return self.respond_json({
                 "error": str(e)
             }, 500)
+
+    # ======================================
+
+    def do_POST(self):
+
+        print("\n================================")
+        print("[POST]")
+        print(f"PATH = {self.path}")
+        print(f"CLIENT = {self.client_address}")
+        print("================================")
+
+        try:
+
+            parsed = urllib.parse.urlparse(self.path)
+
+            path = parsed.path
+
+            if path == "/api/cepin":
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                data = json.loads(post_data.decode('utf-8'))
+
+                # Salva localmente em cepin_info.json
+                cepin_file = "cepin_info.json"
+                with open(cepin_file, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+
+                # Tenta atualizar no GitHub se o token existir
+                try:
+                    update_github_file("cepin_info.json", json.dumps(data, ensure_ascii=False, indent=4))
+                except Exception as ge:
+                    print(f"[GITHUB ERROR] Falha ao atualizar cepin_info.json no GitHub: {ge}")
+
+                return self.respond_json({"success": True, "message": "CEPIN info updated successfully"})
+
+            if path == "/api/agentes":
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                data = json.loads(post_data.decode('utf-8'))
+
+                conn = sqlite3.connect(DB_FILE)
+                cursor = conn.cursor()
+                cursor.execute("""
+                INSERT INTO agentes (nome, area, bio, contato, foto)
+                VALUES (?, ?, ?, ?, ?)
+                """, (data.get('nome'), data.get('area'), data.get('bio'), data.get('contato'), data.get('foto')))
+                new_id = cursor.lastrowid
+                conn.commit()
+                conn.close()
+
+                return self.respond_json({"success": True, "id": new_id})
+
+            return self.respond_json({
+                "error": "not found",
+                "path": path
+            }, 404)
+
+        except Exception as e:
+
+            print(f"[POST ERROR] {repr(e)}")
+
+            return self.respond_json({
+                "error": str(e)
+            }, 500)
+
 
 # ==========================================
 # HTTP SERVER
@@ -385,21 +462,20 @@ def get_github_token():
             print("[WARN] Não foi possível salvar o token localmente:", e)
     return token
 
-def update_github_url(url):
+def update_github_file(filename, content_str):
     import urllib.request
     import base64
     
     token = get_github_token()
     if not token:
-        print("[GITHUB] Atualização automática pulada (sem token).")
+        print(f"[GITHUB] Atualização automática de {filename} pulada (sem token).")
         return
 
     repo = "cepin-jcr/mapeamento-cultural-jacarei"
-    path = "local_api_url.txt"
     branch = "main"
 
-    print(f"[GITHUB] Atualizando {path} no repositório {repo}...")
-    api_url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    print(f"[GITHUB] Atualizando {filename} no repositório {repo}...")
+    api_url = f"https://api.github.com/repos/{repo}/contents/{filename}"
     headers = {
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json",
@@ -416,8 +492,8 @@ def update_github_url(url):
         pass
 
     body = {
-        "message": f"update api url to {url} [skip ci]",
-        "content": base64.b64encode(url.encode('utf-8')).decode('utf-8'),
+        "message": f"update {filename} [skip ci]",
+        "content": base64.b64encode(content_str.encode('utf-8')).decode('utf-8'),
         "branch": branch
     }
     if sha:
@@ -432,14 +508,15 @@ def update_github_url(url):
         )
         with urllib.request.urlopen(req) as res:
             if res.status in (200, 201):
-                print("\n================================")
-                print("[GITHUB SUCCESS] URL da API atualizada com sucesso no GitHub Pages!")
-                print(f"Nova URL: {url}")
-                print("================================\n")
+                print(f"[GITHUB SUCCESS] {filename} atualizado com sucesso no GitHub Pages!")
             else:
-                print(f"[GITHUB ERROR] Falha ao atualizar. Status: {res.status}")
+                print(f"[GITHUB ERROR] Falha ao atualizar {filename}. Status: {res.status}")
     except Exception as e:
-         print(f"[GITHUB ERROR] Erro na requisição API: {e}")
+         print(f"[GITHUB ERROR] Erro na requisição API para {filename}: {e}")
+
+def update_github_url(url):
+    update_github_file("local_api_url.txt", url)
+
 
 def start_tunnel():
     print("\n================================")
