@@ -831,7 +831,7 @@ textarea.edit-field {
     
     <div class="footer-column results-column">
       <h3>📊 Resultados</h3>
-      <p>Acesse <a href="https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN" target="_blank">AQUI</a> o resumo do I Diagnóstico Mercado Cultural de Jacareí.</p>
+      <p>Acesse <a href="https://drive.google.com/drive/u/1/folders/1xQ86MAA8GTt-6k5hG9jcnAGpYOHqe8iE?usp=sharing" target="_blank">Aqui</a> o I Diagnóstico do Mercado Cultural de Jacareí completo e seu resumo.</p>
     </div>
     
     <div class="footer-column social-column">
@@ -843,12 +843,13 @@ textarea.edit-field {
       </ul>
     </div>
     
-    <div class="footer-column cepin-btn-column">
-      <a href="../index.html" class="btn btn-cepin">🏠 Voltar ao Início</a>
+    <div class="footer-column cepin-btn-column" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <a href="../index.html" class="btn btn-cepin">🌿 Conheça o nosso projeto e o CEPIN</a>
+      <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: 10px; line-height: 1.4;">conheça os detalhes do nosso projeto de extensão, pesquisa e o CEPIN.</p>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 • Plataforma de Mapeamento Cultural • IFSP</p>
+    <p>© 2026 CEPIN JCR - IFSP Campus Jacareí. Desenvolvido em parceria com a classe artística e cultural de Jacareí via projetos de pesquisa e extensão.</p>
   </div>
 </footer>
 
@@ -918,8 +919,8 @@ const defaultCepinData = {
     },
     "resultados": {
         "titulo": "RESULTADOS",
-        "texto": "Acesse AQUI o resumo do I Diagnóstico Mercado Cultural de Jacareí.",
-        "link": "https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN"
+        "texto": "Acesse Aqui o I Diagnóstico do Mercado Cultural de Jacareí completo e seu resumo.",
+        "link": "https://drive.google.com/drive/u/1/folders/1xQ86MAA8GTt-6k5hG9jcnAGpYOHqe8iE?usp=sharing"
     },
     "redes_sociais": {
         "instagram": "@cepinjcr",
@@ -1021,6 +1022,13 @@ const APIManager = {
 
 // Carregar Dados do CEPIN
 async function loadCepinData() {
+    // Migração de cache automático para o novo link de Diagnóstico do Google Drive
+    if (activeCepinData && activeCepinData.resultados && (activeCepinData.resultados.link === "https://ocs.jcr.ifsp.edu.br/index.php/IEnCEPIN/CEPIN" || activeCepinData.resultados.texto.includes("resumo do I Diagnóstico"))) {
+        activeCepinData.resultados.link = "https://drive.google.com/drive/u/1/folders/1xQ86MAA8GTt-6k5hG9jcnAGpYOHqe8iE?usp=sharing";
+        activeCepinData.resultados.texto = "Acesse Aqui o I Diagnóstico do Mercado Cultural de Jacareí completo e seu resumo.";
+        localStorage.setItem('cepin_info_data', JSON.stringify(activeCepinData));
+    }
+    
     let localData = localStorage.getItem('cepin_info_data');
     if (localData) {
         try {
