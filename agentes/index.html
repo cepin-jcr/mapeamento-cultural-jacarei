@@ -394,9 +394,6 @@ footer { padding: 40px; text-align: center; color: #777; }
 
 <body>
 
-<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-<img class="leaf" src="https://cdn-icons-png.flaticon.com/512/2909/2909763.png">
-
 <nav>
 <div class="logo">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg/250px-Instituto_Federal_de_S%C3%A3o_Paulo_-_Marca_Vertical_2015.svg.png">
@@ -424,7 +421,7 @@ footer { padding: 40px; text-align: center; color: #777; }
 </nav>
 
 <section class="hero">
-  <div class="badge">🎨 Rostos, mentes e talentos locais</div>
+  <div class="badge"> Rostos, mentes e talentos locais</div>
   <h1>Agentes Culturais</h1>
   <p>Conheça os artesãos, músicos, atores, escritores e produtores culturais que dão vida, cor e história à Jacareí.</p>
 </section>
@@ -451,7 +448,7 @@ footer { padding: 40px; text-align: center; color: #777; }
 <!-- Modal de Configuração de API (Premium) -->
 <div class="api-modal" id="apiModal">
   <div class="api-modal-content">
-    <h3>🔌 Configurar Conexão do Servidor</h3>
+    <h3> Configurar Conexão do Servidor</h3>
     <p>O Mapeamento Cultural funciona por padrão em <b>Modo Estático (Dados Locais Mockados)</b>. Para conectá-lo a um banco real usando o backend Python com túnel Cloudflare, insira a URL gerada abaixo.</p>
     <label style="display:block;margin-bottom:8px;font-size:0.85rem;font-weight:600;color:#555;">URL do Servidor API:</label>
     <input type="text" id="apiUrlInput" placeholder="Ex: https://xxx.trycloudflare.com ou http://localhost:8000">
@@ -580,27 +577,27 @@ footer { padding: 40px; text-align: center; color: #777; }
 <footer class="cute-footer">
   <div class="footer-container">
     <div class="footer-column info-column">
-      <h3>📍 Localização e Contato</h3>
+      <h3> Localização e Contato</h3>
       <p><strong>Endereço:</strong> R. Antônio Fogaça de Almeida, 200 - Jardim América, Jacareí - SP, 12322-030 Sala 116 – CEPIN JCR</p>
       <p><strong>Contato:</strong> Email: <a href="mailto:cepinjcr@gmail.com">cepinjcr@gmail.com</a></p>
     </div>
     
     <div class="footer-column results-column">
-      <h3>📊 Resultados</h3>
+      <h3> Resultados</h3>
       <p>Acesse <a href="https://drive.google.com/drive/u/1/folders/1xQ86MAA8GTt-6k5hG9jcnAGpYOHqe8iE?usp=sharing" target="_blank">Aqui</a> o I Diagnóstico do Mercado Cultural de Jacareí completo e seu resumo.</p>
     </div>
     
     <div class="footer-column social-column">
-      <h3>📱 Redes Sociais</h3>
+      <h3> Redes Sociais</h3>
       <ul class="footer-socials">
-        <li><a href="https://instagram.com/cepinjcr" target="_blank">📸 Instagram: @cepinjcr</a></li>
-        <li><a href="https://facebook.com" target="_blank">👥 Facebook: Cepin Jcr</a></li>
-        <li><a href="https://youtube.com" target="_blank">🎥 YouTube: CEPIN JCR</a></li>
+        <li><a href="https://instagram.com/cepinjcr" target="_blank"> Instagram: @cepinjcr</a></li>
+        <li><a href="https://facebook.com" target="_blank"> Facebook: Cepin Jcr</a></li>
+        <li><a href="https://youtube.com" target="_blank"> YouTube: CEPIN JCR</a></li>
       </ul>
     </div>
     
     <div class="footer-column cepin-btn-column" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-      <a href="../cepin/index.html" class="btn btn-cepin">🌿 Conheça o nosso projeto e o CEPIN</a>
+      <a href="../cepin/index.html" class="btn btn-cepin"> Conheça o nosso projeto e o CEPIN</a>
       <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: 10px; line-height: 1.4;">conheça os detalhes do nosso projeto de extensão, pesquisa e o CEPIN.</p>
     </div>
   </div>
@@ -736,7 +733,7 @@ const APIManager = {
             fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
             fixedBadge.innerHTML = `
                 <span style="width: 10px; height: 10px; border-radius: 50%; background: #5b8c5a; display: inline-block; animation: pulseFixed 2s infinite;"></span>
-                <span style="color: #5b8c5a;">🟢 API Conectada</span>
+                <span style="color: #5b8c5a;"> API Conectada</span>
             `;
             fixedBadge.onclick = abrirConfiguradorAPI;
         } else {
@@ -744,7 +741,7 @@ const APIManager = {
             fixedBadge.style.background = 'rgba(255, 255, 255, 0.95)';
             fixedBadge.innerHTML = `
                 <span style="width: 10px; height: 10px; border-radius: 50%; background: #dc3545; display: inline-block;"></span>
-                <span style="color: #dc3545;">🔴 API Desconectada (Modo Estático)</span>
+                <span style="color: #dc3545;"> API Desconectada (Modo Estático)</span>
             `;
             fixedBadge.onclick = abrirConfiguradorAPI;
         }
@@ -777,9 +774,9 @@ function salvarConfiguradorAPI() {
     fecharConfiguradorAPI();
     APIManager.checkStatus().then(connected => {
         if (connected) {
-            alert("✅ Conectado com sucesso! A lista de agentes será recarregada.");
+            alert(" Conectado com sucesso! A lista de agentes será recarregada.");
         } else {
-            alert("⚠️ Servidor indisponível. A lista usará o Modo Estático.");
+            alert("️ Servidor indisponível. A lista usará o Modo Estático.");
         }
         window.location.reload();
     });
@@ -819,7 +816,7 @@ function renderizarGrid(agentes) {
         const card = document.createElement('div');
         card.className = "agent-card";
         
-        const badgeHtml = isApiOnline ? '<span class="api-source-badge online">⚡ API Real</span>' : '<span class="api-source-badge offline">🔌 Dados locais (Mock)</span>';
+        const badgeHtml = isApiOnline ? '<span class="api-source-badge online"> API Real</span>' : '<span class="api-source-badge offline"> Dados locais (Mock)</span>';
         card.innerHTML = `
             <div class="agent-avatar" style="position:relative;">
                 ${badgeHtml}
@@ -872,7 +869,7 @@ carregarAgentes();
 console.log("=== DIAGNÓSTICO DO RODAPÉ ===");
 const debugFooter = document.querySelector('.cute-footer');
 if (debugFooter) {
-    console.log("✔ Elemento do rodapé encontrado no DOM.");
+    console.log(" Elemento do rodapé encontrado no DOM.");
     const debugStyle = window.getComputedStyle(debugFooter);
     console.log("Display:", debugStyle.display);
     console.log("Visibility:", debugStyle.visibility);
@@ -882,8 +879,11 @@ if (debugFooter) {
         console.warn("Atenção: O rodapé tem altura 0! Pode estar ocultado por layout.");
     }
 } else {
-    console.error("✘ Elemento do rodapé NÃO encontrado no DOM! A página pode estar desatualizada (cache).");
+    console.error(" Elemento do rodapé NÃO encontrado no DOM! A página pode estar desatualizada (cache).");
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-integration.js"></script>
 </body>
 </html>
