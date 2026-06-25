@@ -510,57 +510,40 @@ Ver agenda
 <p>Arte, memória, música e criatividade espalhadas pela cidade.</p>
 </div>
 
-<div class="grid">
-
-<div class="card">
-<img src="https://picsum.photos/700/500?31">
-<div>
-<h3>Arte Urbana</h3>
-<p>Murais e grafites transformando espaços urbanos.</p>
-</div>
+<div class="grid" id="featuredGrid">
+  <!-- Gerado dinamicamente -->
 </div>
 
-<div class="card">
-<img src="https://picsum.photos/700/500?32">
-<div>
-<h3>Música & Cultura</h3>
-<p>Eventos culturais e apresentações comunitárias.</p>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/700/500?33">
-<div>
-<h3>Espaços Criativos</h3>
-<p>Centros culturais, bibliotecas e ateliês.</p>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/700/500?34">
-<div>
-<h3>Teatro & Dança</h3>
-<p>Performances e expressões artísticas locais.</p>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/700/500?35">
-<div>
-<h3>Coletivos</h3>
-<p>Redes colaborativas fortalecendo a cultura.</p>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/700/500?36">
-<div>
-<h3>Patrimônio</h3>
-<p>História e memória cultural de Jacareí.</p>
-</div>
-</div>
-
-</div>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    // We fetch from Supabase wrapper or fallback
+    try {
+        const res = await fetch('/api/agentes');
+        if (res.ok) {
+            const agentes = await res.json();
+            const destaques = agentes.filter(a => a.destaque === true);
+            
+            const grid = document.getElementById('featuredGrid');
+            if (grid && destaques.length > 0) {
+                grid.innerHTML = '';
+                destaques.forEach(ag => {
+                    grid.innerHTML += `
+                    <div class="card">
+                    <img src="${ag.foto}" style="width:100%; height:250px; object-fit:cover; border-radius:12px;">
+                    <div>
+                    <h3>${ag.nome}</h3>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">${ag.area}</p>
+                    </div>
+                    </div>
+                    `;
+                });
+            }
+        }
+    } catch(e) {
+        console.error("Erro ao carregar destaques", e);
+    }
+});
+</script>
 
 </section>
 

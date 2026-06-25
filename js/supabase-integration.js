@@ -134,7 +134,51 @@ document.addEventListener("DOMContentLoaded", async () => {
                     window.location.reload();
                 };
                 tabsHeader.appendChild(logoutBtn);
+
+                // Check Admin Status
+                const { data: perfil } = await supabaseClient.from('perfis').select('is_admin').eq('id', session.user.id).single();
+                if (perfil && perfil.is_admin) {
+                    const btnAdminDestaques = document.getElementById('btnAdminDestaques');
+                    if (btnAdminDestaques) btnAdminDestaques.style.display = 'inline-block';
+
+                    const destaquesList = document.getElementById('destaquesList');
+                    if (destaquesList) {
+                        const { data: agentes } = await supabaseClient.from('agentes').select('*').order('id', {ascending: false});
+                        if (agentes) {
+                            destaquesList.innerHTML = agentes.map(ag => `
+                                <div style="background:#fff; border-radius:12px; padding:15px; border:2px solid ${ag.destaque ? '#5B8C5A' : '#eee'}; box-shadow:0 4px 10px rgba(0,0,0,0.05); transition:.3s;">
+                                    <img src="${ag.foto}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+                                    <h4 style="font-size:0.95rem; margin-bottom:5px; color:#333;">${ag.nome}</h4>
+                                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; cursor:pointer; font-weight:600; color:#5B8C5A;">
+                                        <input type="checkbox" ${ag.destaque ? 'checked' : ''} onchange="window.toggleDestaque(${ag.id}, this, this.parentNode.parentNode)">
+                                        Destacar na Home
+                                    </label>
+                                </div>
+                            `).join('');
+                        }
+                    }
+                }
             }
         }
     }
 });
+
+// Global function for the Admin panel toggle
+window.toggleDestaque = async (id, checkbox, cardElement) => {
+    try {
+        checkbox.disabled = true;
+        const { error } = await supabaseClient.from('agentes').update({ destaque: checkbox.checked }).eq('id', id);
+        if (error) throw error;
+        
+        if(checkbox.checked) {
+            cardElement.style.borderColor = '#5B8C5A';
+        } else {
+            cardElement.style.borderColor = '#eee';
+        }
+    } catch(err) {
+        alert("Erro ao salvar destaque.");
+        checkbox.checked = !checkbox.checked; // Revert visually
+    } finally {
+        checkbox.disabled = false;
+    }
+};
