@@ -29,32 +29,53 @@ window.fetch = async function(resource, config) {
         }
 
         try {
-            if (method === 'GET') {
-                try {
-                    const { data, error } = await supabaseClient.from(endpoint).select('*');
-                    if (error) throw error;
-                    return new Response(JSON.stringify(data || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
-                } catch (supabaseError) {
-                    console.warn("Supabase fetch failed, trying offline fallback...", supabaseError);
-                    // Offline fallback: fetch local JSON file
-                    let prefix = window.location.pathname.includes('/agentes') || window.location.pathname.includes('/perfil') ? '../' : './';
-                    const fallbackRes = await originalFetch(`${prefix}dados/${endpoint}.json`);
-                    if (fallbackRes.ok) {
-                        return fallbackRes;
+            if (endpoint === 'cepin') {
+                if (method === 'GET') {
+                    try {
+                        const { data, error } = await supabaseClient.from('cepin_info').select('content').eq('id', 1).single();
+                        if (error) throw error;
+                        return new Response(JSON.stringify(data.content || {}), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                    } catch (supabaseError) {
+                        console.warn("Supabase fetch cepin_info failed, trying offline fallback...", supabaseError);
+                        let prefix = window.location.pathname.includes('/cepin') ? '../' : './';
+                        const fallbackRes = await originalFetch(`${prefix}cepin_info.json`);
+                        if (fallbackRes.ok) return fallbackRes;
+                        throw supabaseError;
                     }
-                    throw supabaseError; // Re-throw if fallback fails
+                } else if (method === 'POST') {
+                    const { data, error } = await supabaseClient.from('cepin_info').upsert({ id: 1, content: body }).select();
+                    if (error) throw error;
+                    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
                 }
-            } else if (method === 'POST') {
-                const { data, error } = await supabaseClient.from(endpoint).insert(body).select();
-                if (error) throw error;
-                return new Response(JSON.stringify(data[0]), { status: 200, headers: { 'Content-Type': 'application/json' } });
-            } else if (method === 'DELETE') {
-                // Fetch uses query param: ?id=123
-                const urlObj = new URL(resource, 'http://localhost');
-                const id = urlObj.searchParams.get('id');
-                const { error } = await supabaseClient.from(endpoint).delete().eq('id', id);
-                if (error) throw error;
-                return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            } else {
+                // Default table handler (agentes, espacos, etc)
+                if (method === 'GET') {
+                    try {
+                        const { data, error } = await supabaseClient.from(endpoint).select('*');
+                        if (error) throw error;
+                        return new Response(JSON.stringify(data || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                    } catch (supabaseError) {
+                        console.warn("Supabase fetch failed, trying offline fallback...", supabaseError);
+                        // Offline fallback: fetch local JSON file
+                        let prefix = window.location.pathname.includes('/agentes') || window.location.pathname.includes('/perfil') || window.location.pathname.includes('/cepin') ? '../' : './';
+                        const fallbackRes = await originalFetch(`${prefix}dados/${endpoint}.json`);
+                        if (fallbackRes.ok) {
+                            return fallbackRes;
+                        }
+                        throw supabaseError; // Re-throw if fallback fails
+                    }
+                } else if (method === 'POST') {
+                    const { data, error } = await supabaseClient.from(endpoint).insert(body).select();
+                    if (error) throw error;
+                    return new Response(JSON.stringify(data[0]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                } else if (method === 'DELETE') {
+                    // Fetch uses query param: ?id=123
+                    const urlObj = new URL(resource, 'http://localhost');
+                    const id = urlObj.searchParams.get('id');
+                    const { error } = await supabaseClient.from(endpoint).delete().eq('id', id);
+                    if (error) throw error;
+                    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                }
             }
         } catch (err) {
             console.error("Supabase Interceptor Error:", err);
