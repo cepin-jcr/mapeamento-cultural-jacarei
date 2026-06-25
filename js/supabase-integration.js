@@ -30,9 +30,20 @@ window.fetch = async function(resource, config) {
 
         try {
             if (method === 'GET') {
-                const { data, error } = await supabaseClient.from(endpoint).select('*');
-                if (error) throw error;
-                return new Response(JSON.stringify(data || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                try {
+                    const { data, error } = await supabaseClient.from(endpoint).select('*');
+                    if (error) throw error;
+                    return new Response(JSON.stringify(data || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                } catch (supabaseError) {
+                    console.warn("Supabase fetch failed, trying offline fallback...", supabaseError);
+                    // Offline fallback: fetch local JSON file
+                    let prefix = window.location.pathname.includes('/agentes') || window.location.pathname.includes('/perfil') ? '../' : './';
+                    const fallbackRes = await originalFetch(`${prefix}dados/${endpoint}.json`);
+                    if (fallbackRes.ok) {
+                        return fallbackRes;
+                    }
+                    throw supabaseError; // Re-throw if fallback fails
+                }
             } else if (method === 'POST') {
                 const { data, error } = await supabaseClient.from(endpoint).insert(body).select();
                 if (error) throw error;
